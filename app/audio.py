@@ -59,11 +59,13 @@ class AudioPlayer:
     def play(self, filename):
 
         self.wave_file = wave.open(filename, 'rb')
-        self.stream = self.audio.open(format=self.audio.get_format_from_width(self.wave_file.getsampwidth()),
-                                      channels=self.wave_file.getnchannels(),
-                                      rate=self.wave_file.getframerate(),
-                                      output=True,
-                                      stream_callback=self.callback)
+        self.stream = self.audio.open(
+            format=self.audio.get_format_from_width(
+                self.wave_file.getsampwidth()),
+            channels=self.wave_file.getnchannels(),
+            rate=self.wave_file.getframerate(),
+            output=True,
+            stream_callback=self.callback)
 
         self.stream.start_stream()
         self.is_playing = True

@@ -1,7 +1,7 @@
+import logging
 import sqlite3
 import datetime
-from typing import Any, List, NamedTuple, Optional
-from collections import namedtuple
+from typing import List, NamedTuple, Optional
 
 
 class Recording(NamedTuple):
@@ -11,33 +11,21 @@ class Recording(NamedTuple):
     play_count: int
     last_played_at: Optional[sqlite3.Timestamp]
 
-# Recording = namedtuple(
-#     'Recording', [
-#         'id',
-#         'created_at',
-#         'duration',
-#         'play_count',
-#         'last_played_at'
-#     ]
-# )
-
 
 class Database:
     def __init__(self, db: str):
         self.connection = sqlite3.connect(db)
         self.cursor = self.connection.cursor()
+        self.log = logging.getLogger("Database")
 
     def create_tables(self):
-        try:
-            self.cursor.execute("DROP TABLE recordings")
-        except:
-            pass
+        self.cursor.execute("DROP TABLE recordings")
 
         self.cursor.execute(
             """
       CREATE TABLE recordings (
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
-        created_at      TIMESTAMP NOT NULl, 
+        created_at      TIMESTAMP NOT NULl,
         duration        INT NOT NULl,
         play_count      INT NOT NULl DEFAULT 0,
         last_played_at  TIMESTAMP

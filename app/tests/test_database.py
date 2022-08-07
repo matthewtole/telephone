@@ -8,7 +8,7 @@ def test_add_recording():
     recording = db.get_recording_by_id(1)
     assert recording.id == 1
     assert recording.duration == 100
-    assert recording.last_played_at == None
+    assert recording.last_played_at == None  # noqa: E711
     assert recording.play_count == 0
 
 
@@ -31,5 +31,5 @@ def test_unplayed_recordings():
 
     assert len(db.get_unplayed_recordings()) == 0
 
-    assert(len(db.get_recordings_with_play_count(1))) == 2
-    assert(len(db.get_recordings_with_play_count(2))) == 1
+    assert len(db.get_recordings_with_play_count(1)) == 2
+    assert len(db.get_recordings_with_play_count(2)) == 1
