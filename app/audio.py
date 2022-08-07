@@ -1,6 +1,8 @@
+import logging
 import time
 import pyaudio
 import wave
+import os
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
@@ -12,8 +14,10 @@ class AudioRecording:
     def __init__(self):
         self.audio = pyaudio.PyAudio()
         self.is_recording = False
+        self.log = logging.getLogger("AudioRecording")
 
     def start_recording(self):
+        self.log.debug('[audio] Starting a recording session')
         self.stream = self.audio.open(format=FORMAT,
                                       channels=CHANNELS,
                                       rate=RATE,
@@ -28,12 +32,14 @@ class AudioRecording:
             self.frames.append(data)
 
     def stop_recording(self):
+        self.log.debug('[audio] Ending a recording session')
         self.is_recording = False
         self.stream.stop_stream()
         self.stream.close()
         self.audio.terminate()
 
     def save_recording(self, filename: str):
+        self.log.debug('[audio] Saving a recording session')
         wf = wave.open(filename, 'wb')
         wf.setnchannels(CHANNELS)
         wf.setsampwidth(self.audio.get_sample_size(FORMAT))
@@ -73,16 +79,26 @@ class AudioPlayer:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG,
+                        filename='telephone.log',
+                        encoding='utf-8',
+                        format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
+
+    try:
+        os.mkdir("temp")
+    except FileExistsError:
+        pass
     recording = AudioRecording()
     start = time.time()
     recording.start_recording()
     while (time.time() - start) <= 3:
         recording.tick()
     recording.stop_recording()
-    recording.save_recording("test.wav")
+    recording.save_recording("temp/test.wav")
+    print("Recording saved")
 
-    player = AudioPlayer()
-    player.play("test.wav")
-    while player.is_playing:
-        player.tick()
-        time.sleep(0.1)
+    # player = AudioPlayer()
+    # player.play("temp/test.wav")
+    # while player.is_playing:
+    #     player.tick()
+    #     time.sleep(0.1)
