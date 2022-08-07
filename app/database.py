@@ -19,7 +19,10 @@ class Database:
         self.log = logging.getLogger("Database")
 
     def create_tables(self):
-        self.cursor.execute("DROP TABLE recordings")
+        try:
+            self.cursor.execute("DROP TABLE recordings")
+        except sqlite3.OperationalError:
+            pass
 
         self.cursor.execute(
             """
