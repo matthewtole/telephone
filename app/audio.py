@@ -43,6 +43,35 @@ class AudioRecording:
         self.frames = []
 
 
+class AudioPlayer:
+    def __init__(self):
+        self.audio = pyaudio.PyAudio()
+        self.is_playing = False
+
+    def callback(self, in_data, frame_count, time_info, status):
+        data = self.wave_file.readframes(frame_count)
+        return (data, pyaudio.paContinue)
+
+    def play(self, filename):
+
+        self.wave_file = wave.open(filename, 'rb')
+        self.stream = self.audio.open(format=self.audio.get_format_from_width(self.wave_file.getsampwidth()),
+                                      channels=self.wave_file.getnchannels(),
+                                      rate=self.wave_file.getframerate(),
+                                      output=True,
+                                      stream_callback=self.callback)
+
+        self.stream.start_stream()
+        self.is_playing = True
+
+    def tick(self):
+        if not self.stream.is_active():
+            self.stream.stop_stream()
+            self.stream.close()
+            self.wave_file.close()
+            self.is_playing = False
+
+
 if __name__ == "__main__":
     recording = AudioRecording()
     start = time.time()
@@ -51,3 +80,9 @@ if __name__ == "__main__":
         recording.tick()
     recording.stop_recording()
     recording.save_recording("test.wav")
+
+    player = AudioPlayer()
+    player.play("test.wav")
+    while player.is_playing:
+        player.tick()
+        time.sleep(0.1)
