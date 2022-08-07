@@ -1,8 +1,6 @@
 import logging
-import time
 import pyaudio
 import wave
-import os
 
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
@@ -76,29 +74,3 @@ class AudioPlayer:
             self.stream.close()
             self.wave_file.close()
             self.is_playing = False
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG,
-                        filename='telephone.log',
-                        encoding='utf-8',
-                        format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
-
-    try:
-        os.mkdir("temp")
-    except FileExistsError:
-        pass
-    recording = AudioRecording()
-    start = time.time()
-    recording.start_recording()
-    while (time.time() - start) <= 3:
-        recording.tick()
-    recording.stop_recording()
-    recording.save_recording("temp/test.wav")
-    print("Recording saved")
-
-    # player = AudioPlayer()
-    # player.play("temp/test.wav")
-    # while player.is_playing:
-    #     player.tick()
-    #     time.sleep(0.1)
