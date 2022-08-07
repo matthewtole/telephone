@@ -1,6 +1,25 @@
 import sqlite3
 import datetime
-from typing import Any
+from typing import Any, List, NamedTuple, Optional
+from collections import namedtuple
+
+
+class Recording(NamedTuple):
+    id: int
+    created_at: sqlite3.Timestamp
+    duration: int
+    play_count: int
+    last_played_at: Optional[sqlite3.Timestamp]
+
+# Recording = namedtuple(
+#     'Recording', [
+#         'id',
+#         'created_at',
+#         'duration',
+#         'play_count',
+#         'last_played_at'
+#     ]
+# )
 
 
 class Database:
@@ -34,7 +53,21 @@ class Database:
         self.connection.commit()
         return self.cursor.lastrowid
 
-    def get_recording_by_id(self, id: int) -> Any:
-        return self.cursor.execute(
+    def get_recording_by_id(self, id: int) -> Recording:
+        result = self.cursor.execute(
             "SELECT * FROM recordings WHERE id=%d" % id
         ).fetchone()
+        return Recording(*result)
+
+    def get_unplayed_recordings(self) -> List[Recording]:
+        return self.get_recordings_with_play_count(0)
+
+    def get_recordings_with_play_count(self, count) -> List[Recording]:
+        result = self.cursor.execute(
+            "SELECT * FROM recordings WHERE play_count=%d" % count).fetchall()
+        return list(map(lambda r: Recording(*r), result))
+
+    def play_recording(self, id: int) -> None:
+        self.cursor.execute(
+            "UPDATE recordings SET play_count=play_count+1 WHERE id=%d" % id)
+        self.connection.commit()

@@ -25,4 +25,3 @@ if __name__ == "__main__":
     db = Database(DB_FILE)
     db.create_tables()
     telephone = Telephone(db)
-    telephone.test()
