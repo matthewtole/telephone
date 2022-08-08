@@ -1,3 +1,4 @@
+import time
 from database import Database
 from telephone import Telephone
 import logging
@@ -27,3 +28,6 @@ if __name__ == "__main__":
     db = Database(DB_FILE)
     db.create_tables()
     telephone = Telephone(db)
+    while True:
+        telephone.tick()
+        time.sleep(0.1)
