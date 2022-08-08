@@ -65,8 +65,10 @@ class KeyboardInput(Input):
         self.listener.start()
 
     def on_press(self, key):
-        self.button = KeyboardInput.KEY_MAPPINGS.get(key.char, None)
-        pass
+        try:
+            self.button = KeyboardInput.KEY_MAPPINGS.get(key.char, None)
+        except AttributeError:
+            pass
 
     def on_release(self, key):
         pass

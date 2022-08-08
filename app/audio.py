@@ -8,11 +8,11 @@ CHANNELS = 1
 RATE = 44100
 
 
-class AudioRecording:
+class AudioRecorder:
     def __init__(self):
         self.audio = pyaudio.PyAudio()
         self.is_recording = False
-        self.log = logging.getLogger("AudioRecording")
+        self.log = logging.getLogger("AudioRecorder")
 
     def start_recording(self):
         self.log.debug('[audio] Starting a recording session')
@@ -57,7 +57,6 @@ class AudioPlayer:
         return (data, pyaudio.paContinue)
 
     def play(self, filename):
-
         self.wave_file = wave.open(filename, 'rb')
         self.stream = self.audio.open(
             format=self.audio.get_format_from_width(

@@ -12,8 +12,8 @@ DB_FILE = 'telephone.db'
 def setup():
     logging.basicConfig(
         level=logging.DEBUG,
-        filename=LOG_FILE,
-        encoding='utf-8',
+        # filename=LOG_FILE,
+        # encoding='utf-8',
         format="%(asctime)s:%(levelname)s:%(name)s:%(message)s"
     )
 
