@@ -3,3 +3,4 @@ __pycache__/
 temp/
 telephone.log
 .pytest_cache/
+node_modules/

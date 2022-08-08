@@ -16,7 +16,7 @@ def setup():
         level=logging.DEBUG,
         filename=LOG_FILE,
         encoding='utf-8',
-        format="%(asctime)s:%(levelname)s:%(name)s:%(message)s"
+        format="%(asctime)s|%(levelname)s|%(name)s|%(message)s"
     )
 
     try:
