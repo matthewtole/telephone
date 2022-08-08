@@ -15,7 +15,7 @@ class AudioRecorder:
         self.log = logging.getLogger("AudioRecorder")
 
     def start_recording(self):
-        self.log.debug('[audio] Starting a recording session')
+        self.log.debug('Starting a recording session')
         self.stream = self.audio.open(format=FORMAT,
                                       channels=CHANNELS,
                                       rate=RATE,
@@ -30,14 +30,14 @@ class AudioRecorder:
             self.frames.append(data)
 
     def stop_recording(self):
-        self.log.debug('[audio] Ending a recording session')
+        self.log.debug('Ending a recording session')
         self.is_recording = False
         self.stream.stop_stream()
         self.stream.close()
         self.audio.terminate()
 
     def save_recording(self, filename: str):
-        self.log.debug('[audio] Saving a recording session')
+        self.log.debug('Saving a recording session')
         wf = wave.open(filename, 'wb')
         wf.setnchannels(CHANNELS)
         wf.setsampwidth(self.audio.get_sample_size(FORMAT))
