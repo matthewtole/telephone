@@ -6,6 +6,7 @@ import wave
 
 class AudioPlayer(EventEmitter):
     def __init__(self):
+        super().__init__()
         self.audio = pyaudio.PyAudio()
         self.is_playing = False
         self.log = logging.getLogger("Audio.Player")
