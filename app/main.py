@@ -1,7 +1,10 @@
 import logging
 import os
 
-from config import LOG_FILE, TEMP_DIR
+from config import DATABSE_FILE, LOG_FILE, TEMP_DIR
+
+from database import Database
+from telephone.base import Telephone
 
 
 def setup():
@@ -20,4 +23,6 @@ def setup():
 
 if __name__ == "__main__":
     setup()
-    pass
+    db = Database(DATABSE_FILE)
+    telephone = Telephone(db)
+    telephone.start()

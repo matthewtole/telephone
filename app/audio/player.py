@@ -14,7 +14,7 @@ class AudioPlayer(EventEmitter):
         data = self.wave_file.readframes(frame_count)
         return (data, pyaudio.paContinue)
 
-    def play(self, filename):
+    def play(self, filename: str) -> None:
         self.log.log(logging.INFO, "Playing %s" % filename)
         self.wave_file = wave.open(filename, 'rb')
         self.stream = self.audio.open(
@@ -28,11 +28,11 @@ class AudioPlayer(EventEmitter):
         self.stream.start_stream()
         self.is_playing = True
 
-    def stop(self):
+    def stop(self) -> None:
         self.log.log(logging.INFO, "Audio playback stopped")
         self.stream.stop_stream()
 
-    def tick(self):
+    def tick(self) -> None:
         if self.is_playing and not self.stream.is_active():
             self.stream.stop_stream()
             self.stream.close()
