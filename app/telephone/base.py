@@ -1,3 +1,4 @@
+from eventemitter import EventEmitter
 import time
 from audio.player import AudioPlayer
 from database import Database
@@ -84,7 +85,7 @@ class Telephone:
         self.task_queue = [
             TaskWait(3),
             TaskAudio("audio/intro-01.wav"),
-            TaskChoice()
+            TaskChoice(EventEmitter)
         ]
 
     def start(self):
