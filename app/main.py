@@ -1,14 +1,7 @@
-import argparse
-import time
-from input import PhoneInput
-from input import KeyboardInput
-from database import Database
-from telephone import Telephone
 import logging
 import os
 
-LOG_FILE = 'telephone.log'
-DB_FILE = 'telephone.db'
+from config import LOG_FILE, TEMP_DIR
 
 
 def setup():
@@ -20,27 +13,11 @@ def setup():
     )
 
     try:
-        os.mkdir("temp")
+        os.mkdir(TEMP_DIR)
     except FileExistsError:
         pass
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input")
-    args = parser.parse_args()
-
     setup()
-
-    db = Database(DB_FILE)
-    db.create_tables()
-
-    if args.input == "phone":
-        input = PhoneInput()
-    else:
-        input = KeyboardInput()
-
-    telephone = Telephone(db, input)
-    while True:
-        telephone.tick()
-        time.sleep(0.1)
+    pass
