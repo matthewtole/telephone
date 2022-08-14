@@ -26,7 +26,7 @@ class Task:
 
 
 class TaskWait(Task):
-    def __init__(self, duration: int) -> None:
+    def __init__(self, duration: float) -> None:
         super().__init__()
         self.duration = duration
         self.end_time = -1
@@ -39,6 +39,9 @@ class TaskWait(Task):
 
     def abort(self) -> None:
         self.end_time = time()
+
+    def __repr__(self) -> str:
+        return "TaskWait(%f)" % (self.duration)
 
 
 class TaskAudio(Task):
@@ -58,6 +61,9 @@ class TaskAudio(Task):
 
     def abort(self) -> None:
         return self.audio_player.stop()
+
+    def __repr__(self) -> str:
+        return "TaskWait(%s)" % (self.filename)
 
 
 class TaskChoice(Task):
@@ -117,3 +123,31 @@ class TaskAny(TaskMany):
         if has_complete_task:
             self.abort()
         return has_complete_task
+
+
+class TaskSequence(Task):
+    def __init__(self, tasks: list[Task]) -> None:
+        super().__init__()
+        self.tasks = tasks
+        self.current_task = None
+
+    def start(self):
+        self.current_task = self.tasks.pop(0)
+        self.current_task.start()
+
+    def tick(self):
+        if self.current_task is not None:
+            self.current_task.tick()
+            if self.current_task.is_complete() and len(self.tasks) > 0:
+                self.current_task = self.tasks.pop()
+                self.current_task.start()
+
+    def is_complete(self) -> bool:
+        self.tick()
+        if self.current_task is None:
+            return False
+        return self.current_task.is_complete() and len(self.tasks) == 0
+
+    def abort(self) -> None:
+        if self.current_task is not None:
+            self.current_task.abort()
