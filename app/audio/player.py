@@ -1,10 +1,9 @@
-from eventemitter import EventEmitter
 import logging
 import pyaudio
 import wave
 
 
-class AudioPlayer(EventEmitter):
+class AudioPlayer:
     def __init__(self):
         super().__init__()
         self.audio = pyaudio.PyAudio()
@@ -39,4 +38,3 @@ class AudioPlayer(EventEmitter):
             self.stream.close()
             self.wave_file.close()
             self.is_playing = False
-            self.emit('end')
