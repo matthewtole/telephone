@@ -1,8 +1,5 @@
-import logging
-import asyncio
-import event_emitter as events
 import time
-from ..tasks import Button, TaskAll, TaskAny, TaskChoice, TaskWait
+from ..tasks import TaskAll, TaskAny, TaskWait
 
 
 def test_task_wait():
