@@ -1,6 +1,6 @@
 import logging
 import os
-
+import telephone.tasks  # noqa: F401
 
 from config import DATABSE_FILE, LOG_FILE, TEMP_DIR
 
@@ -25,5 +25,5 @@ def setup():
 if __name__ == "__main__":
     setup()
     db = Database(DATABSE_FILE)
-    telephone = Telephone(db)
-    telephone.start()
+    tel = Telephone(db)
+    tel.start()

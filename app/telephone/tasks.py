@@ -1,7 +1,7 @@
 from enum import Enum
 from time import time
 
-from ..audio.player import AudioPlayer
+from audio.player import AudioPlayer
 
 
 class Button(Enum):
