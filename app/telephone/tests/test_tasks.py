@@ -1,6 +1,12 @@
 import time
 from ..tasks import (
-    Button, TaskAll, TaskAny, TaskChoice, TaskSequence, TaskWait
+    Button,
+    TaskAll,
+    TaskAny,
+    TaskChoice,
+    TaskCode,
+    TaskSequence,
+    TaskWait
 )
 
 
@@ -58,3 +64,21 @@ def test_task_choice():
     task.on_button(Button.NUM_0)
     assert task.is_complete()
     assert task.choice == Button.NUM_0.value
+
+
+def test_task_code():
+    task = TaskCode()
+    assert not task.is_complete()
+    task.start()
+    assert not task.is_complete()
+    task.on_button(Button.NUM_1)
+    assert not task.is_complete()
+    task.on_button(Button.NUM_2)
+    assert not task.is_complete()
+    task.on_button(Button.NUM_3)
+    assert not task.is_complete()
+    task.on_button(Button.STAR)
+    assert not task.is_complete()
+    task.on_button(Button.POUND)
+    assert task.is_complete()
+    assert task.code_string() == '123'

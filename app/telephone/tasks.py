@@ -6,6 +6,18 @@ from audio.player import AudioPlayer
 
 class Button(Enum):
     NUM_0 = 0
+    NUM_1 = 1
+    NUM_2 = 2
+    NUM_3 = 3
+    NUM_4 = 4
+    NUM_5 = 5
+    NUM_6 = 6
+    NUM_7 = 7
+    NUM_8 = 8
+    NUM_9 = 9
+
+    STAR = 100
+    POUND = 101
 
 
 class Task:
@@ -96,7 +108,7 @@ class TaskMany(Task):
 
     def abort(self) -> None:
         for task in self.sub_tasks:
-            if not task.is_complete:
+            if not task.is_complete():
                 task.abort()
 
 
@@ -146,3 +158,26 @@ class TaskSequence(Task):
     def abort(self) -> None:
         if self.current_task is not None:
             self.current_task.abort()
+
+
+class TaskCode(Task):
+    def __init__(self) -> None:
+        super().__init__()
+        self.code = []
+        self.code_completed = False
+
+    def is_complete(self) -> bool:
+        return self.code_completed
+
+    def on_button(self, button: Button) -> None:
+        if button == Button.POUND:
+            self.code_completed = True
+        elif button.value < 100:
+            self.code.append(button.value)
+
+    def abort(self) -> None:
+        self.code = []
+        super().abort()
+
+    def code_string(self) -> str:
+        return ''.join(map(lambda c: str(c), self.code))
