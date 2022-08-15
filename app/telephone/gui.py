@@ -1,35 +1,50 @@
+from importlib.resources import is_resource
 from time import sleep
 import tkinter as tk
 from tkinter import ttk
-from threading import Thread
 from functools import partial
+from typing import Optional
+
+from .tasks import Button, Task, TaskChoice
 
 
-class Gui:
+class InputManager:
     def __init__(self) -> None:
-        self.is_running = True
-        self.last_button = None
-
-    def set_button(self, b: str) -> None:
-        self.last_button = b
+        self.is_running = False
 
     def start(self) -> None:
-        root = tk.Tk()
-        root.geometry('640x480')
-        root.resizable(False, False)
-        root.title('Telephone')
+        pass
+
+    def button_pressed(self) -> Optional[Button]:
+        return None
+
+
+class Gui(InputManager):
+    def __init__(self) -> None:
+        super().__init__()
+        self.is_running = True
+        self.last_button: Optional[Button] = None
+
+    def set_button(self, button: Button) -> None:
+        self.last_button = button
+
+    def start(self) -> None:
+        self.root = tk.Tk()
+        self.root.geometry('640x480')
+        self.root.resizable(False, False)
+        self.root.title('Telephone')
 
         s = ttk.Style()
         s.configure('new.TFrame', background='#f00')
 
-        container = ttk.Frame(root, style='new.TFrame')
+        container = ttk.Frame(self.root, style='new.TFrame')
         container.pack(fill=tk.BOTH, expand=1)
 
         for b in range(9):
             ttk.Button(
                 container,
                 text=str(b+1),
-                command=partial(self.set_button, str(b+1))
+                command=partial(self.set_button,  list(Button)[b+1])
             ).grid(
                 column=b % 3,
                 row=int(b/3)),
@@ -37,44 +52,51 @@ class Gui:
         ttk.Button(
             container,
             text="0",
-            command=partial(self.set_button, "0")
+            command=partial(self.set_button, Button.NUM_0)
         ).grid(column=0, row=3)
         ttk.Button(
             container,
             text="*",
-            command=partial(self.set_button, "*")
+            command=partial(self.set_button, Button.STAR)
         ).grid(column=1, row=3)
         ttk.Button(
             container,
             text="#",
-            command=partial(self.set_button, "#")
+            command=partial(self.set_button, Button.POUND)
         ).grid(column=2, row=3)
 
         self.is_running = True
-        root.mainloop()
+        self.root.mainloop()
         self.is_running = False
 
-    def button(self):
+    def button_pressed(self):
         b = self.last_button
         self.last_button = None
         return b
 
+    def stop(self):
+        self.root.quit()
 
-class ButtonListener:
-    def __init__(self, gui: Gui) -> None:
-        self.gui = gui
+
+class Telephone:
+    def __init__(self, input_manager: InputManager, task: Task) -> None:
+        self.input_manager = input_manager
+        self.task = task
 
     def start(self):
-        while self.gui.is_running:
-            button = self.gui.button()
+        self.task.start()
+
+        while self.input_manager.is_running:
+            if self.task.is_complete():
+                break
+
+            self.task.tick()
+
+            button = self.input_manager.button_pressed()
             if button is not None:
-                print(button)
+                self.task.on_button(button)
+
             sleep(0.1)
-        print("goodbye")
 
-
-gui = Gui()
-btn = ButtonListener(gui)
-btn_thrad = Thread(target=btn.start)
-btn_thrad.start()
-gui.start()
+        self.input_manager.stop()
+        self.task.abort()

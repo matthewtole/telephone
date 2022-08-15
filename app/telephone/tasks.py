@@ -42,6 +42,9 @@ class Task:
     def abort(self) -> None:
         pass
 
+    def on_button(self, button: Button) -> None:
+        pass
+
 
 class TaskWait(Task):
     def __init__(self, duration: float) -> None:
@@ -168,6 +171,9 @@ class TaskSequence(Task):
     def abort(self) -> None:
         if self.current_task is not None:
             self.current_task.abort()
+
+    def on_button(self, button: Button):
+        self.current_task.on_button(button)
 
 
 class TaskCode(Task):
