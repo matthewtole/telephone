@@ -67,23 +67,18 @@ class TaskAudio(Task):
 
 
 class TaskChoice(Task):
-    pass
-    # def __init__(self, emitter: events.EventEmitter) -> None:
-    #     super().__init__()
-    #     self.choice = None
-    #     self.emitter = emitter
+    def __init__(self) -> None:
+        super().__init__()
+        self.choice = None
 
-    # def on_button(self, button: Button):
-    #     self.choice = button.value
+    def on_button(self, button: Button):
+        self.choice = button.value
 
-    # def start(self) -> None:
-    #     self.emitter.on('button', self.on_button)
+    def is_complete(self) -> bool:
+        return self.choice is not None
 
-    # def is_complete(self) -> bool:
-    #     return self.choice is not None
-
-    # def abort(self) -> None:
-    #     self.choice = -1
+    def abort(self) -> None:
+        self.choice = -1
 
 
 class TaskMany(Task):

@@ -1,5 +1,7 @@
 import time
-from ..tasks import TaskAll, TaskAny, TaskSequence, TaskWait
+from ..tasks import (
+    Button, TaskAll, TaskAny, TaskChoice, TaskSequence, TaskWait
+)
 
 
 def test_task_wait():
@@ -46,3 +48,13 @@ def test_task_sequence():
     assert not task.is_complete()
     time.sleep(0.2)
     assert task.is_complete()
+
+
+def test_task_choice():
+    task = TaskChoice()
+    assert not task.is_complete()
+    task.start()
+    assert not task.is_complete()
+    task.on_button(Button.NUM_0)
+    assert task.is_complete()
+    assert task.choice == Button.NUM_0.value
