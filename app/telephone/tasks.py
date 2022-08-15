@@ -1,7 +1,12 @@
 from enum import Enum
 from time import time
+from os.path import join
 
 from audio.player import AudioPlayer
+
+
+class AudioTrack(Enum):
+    INTRO = "intro-01.wav"
 
 
 class Button(Enum):
@@ -57,13 +62,13 @@ class TaskWait(Task):
 
 
 class TaskAudio(Task):
-    def __init__(self, filename: str) -> None:
+    def __init__(self, track: AudioTrack) -> None:
         super().__init__()
-        self.filename = filename
+        self.track = track
         self.audio_player = AudioPlayer()
 
     def start(self) -> None:
-        self.audio_player.play(self.filename)
+        self.audio_player.play(join('../audio', self.track.value))
 
     def tick(self) -> None:
         self.audio_player.tick()
@@ -75,7 +80,7 @@ class TaskAudio(Task):
         return self.audio_player.stop()
 
     def __repr__(self) -> str:
-        return "TaskWait(%s)" % (self.filename)
+        return "TaskWait(%s)" % (self.track.value)
 
 
 class TaskChoice(Task):

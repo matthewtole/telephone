@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 import telephone.tasks  # noqa: F401
 
 from config import DATABSE_FILE, LOG_FILE, TEMP_DIR
@@ -24,3 +25,8 @@ def setup():
 if __name__ == "__main__":
     setup()
     db = Database(DATABSE_FILE)
+    task = telephone.tasks.TaskAudio(telephone.tasks.AudioTrack.INTRO)
+    task.start()
+    while not task.is_complete():
+        task.tick()
+        time.sleep(0.1)
