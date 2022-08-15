@@ -39,5 +39,6 @@ jobs:
           coverage run --source=app -m pytest
       - name: Upload coverage data to coveralls.io
         run: coveralls --service=github
+        working-directory: app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
