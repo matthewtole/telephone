@@ -7,10 +7,11 @@ from ..tasks import (
     TaskAll,
     TaskAny,
     TaskAudio,
+    TaskAudioSequence,
     TaskChoice,
     TaskCode,
     TaskSequence,
-    TaskWait
+    TaskWait,
 )
 
 
@@ -46,10 +47,13 @@ def test_task_all():
     task.start()
     assert not task.is_complete()
     time.sleep(0.11)
+    task.tick()
     assert not task.is_complete()
     time.sleep(0.11)
+    task.tick()
     assert not task.is_complete()
     time.sleep(0.11)
+    task.tick()
     assert task.is_complete()
 
 
@@ -59,6 +63,7 @@ def test_task_any():
     task.start()
     assert not task.is_complete()
     time.sleep(0.15)
+    task.tick()
     assert task.is_complete()
 
 
@@ -100,7 +105,7 @@ def test_task_code():
     assert not task.is_complete()
     task.on_button(Button.POUND)
     assert task.is_complete()
-    assert task.code_string() == '123'
+    assert task.code_string() == "123"
 
 
 def test_task_audio():
@@ -112,4 +117,29 @@ def test_task_audio():
     assert audio_player.is_playing
     assert audio_player.filename.endswith(AudioTrack.INTRO.value)
     audio_player.stop()
+    assert task.is_complete()
+
+
+def test_task_audio_sequence():
+    audio_player = FakeAudioPlayer()
+    task = TaskAudioSequence("123", audio_player)
+    assert not task.is_complete()
+    task.start()
+    assert not task.is_complete()
+    assert audio_player.is_playing
+    assert audio_player.filename.endswith("/1.wav")
+    audio_player.stop()
+    task.tick()
+
+    assert not task.is_complete()
+    assert audio_player.is_playing
+    assert audio_player.filename.endswith("/2.wav")
+    audio_player.stop()
+    task.tick()
+
+    assert not task.is_complete()
+    assert audio_player.is_playing
+    assert audio_player.filename.endswith("/3.wav")
+    audio_player.stop()
+    task.tick()
     assert task.is_complete()
