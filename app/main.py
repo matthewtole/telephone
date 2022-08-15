@@ -1,7 +1,8 @@
 import logging
 import os
 from threading import Thread
-from telephone.gui import Telephone, Gui
+from telephone.input_manager import DesktopInputManager
+from telephone.telephone import Telephone
 import telephone.tasks  # noqa: F401
 
 from config import DATABSE_FILE, LOG_FILE, TEMP_DIR
@@ -26,13 +27,14 @@ def setup():
 if __name__ == "__main__":
     setup()
     db = Database(DATABSE_FILE)
-    task = telephone.tasks.TaskSequence([
+    root_task = telephone.tasks.TaskSequence([
         telephone.tasks.TaskChoice(),
         telephone.tasks.TaskAudio(telephone.tasks.AudioTrack.INTRO)
     ])
 
-    gui = Gui()
-    tel = Telephone(gui, task)
-    btn_thrad = Thread(target=tel.start)
-    btn_thrad.start()
-    gui.start()
+    desktop = DesktopInputManager()
+    phone = Telephone(desktop, root_task)
+
+    phone_thread = Thread(target=phone.start)
+    phone_thread.start()
+    desktop.start()

@@ -82,7 +82,7 @@ class TaskAudio(Task):
 
     def is_complete(self) -> bool:
         self.tick()
-        return not self.audio_player.is_playing and self.has_played == True
+        return not self.audio_player.is_playing and self.has_played is True
 
     def abort(self) -> None:
         return self.audio_player.stop()
