@@ -276,4 +276,6 @@ class TaskDemoCode(Task):
             self.audio_task.tick()
 
     def is_complete(self) -> bool:
-        return self.code_task.is_complete() and self.audio_task is not None and self.audio_task.is_complete()
+        return self.code_task.is_complete() \
+            and self.audio_task is not None \
+            and self.audio_task.is_complete()
