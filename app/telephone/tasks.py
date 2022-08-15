@@ -36,6 +36,7 @@ class Task:
         pass
 
     def is_complete(self) -> bool:
+        self.tick()
         return True
 
     def abort(self) -> None:
@@ -52,6 +53,7 @@ class TaskWait(Task):
         self.end_time = time() + self.duration
 
     def is_complete(self) -> bool:
+        self.tick()
         return self.end_time > 0 and time() >= self.end_time
 
     def abort(self) -> None:
@@ -76,6 +78,7 @@ class TaskAudio(Task):
         self.audio_player.tick()
 
     def is_complete(self) -> bool:
+        self.tick()
         return not self.audio_player.is_playing and self.has_played == True
 
     def abort(self) -> None:
