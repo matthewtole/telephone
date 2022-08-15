@@ -62,19 +62,21 @@ class TaskWait(Task):
 
 
 class TaskAudio(Task):
-    def __init__(self, track: AudioTrack) -> None:
+    def __init__(self, track: AudioTrack, audio_player=AudioPlayer()) -> None:
         super().__init__()
         self.track = track
-        self.audio_player = AudioPlayer()
+        self.audio_player = audio_player
+        self.has_played = False
 
     def start(self) -> None:
+        self.has_played = True
         self.audio_player.play(join('../audio', self.track.value))
 
     def tick(self) -> None:
         self.audio_player.tick()
 
     def is_complete(self) -> bool:
-        return not self.audio_player.is_playing
+        return not self.audio_player.is_playing and self.has_played == True
 
     def abort(self) -> None:
         return self.audio_player.stop()

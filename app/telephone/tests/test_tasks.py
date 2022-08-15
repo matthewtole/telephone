@@ -1,13 +1,32 @@
 import time
+
+from ...audio.player import AudioPlayer
 from ..tasks import (
+    AudioTrack,
     Button,
     TaskAll,
     TaskAny,
+    TaskAudio,
     TaskChoice,
     TaskCode,
     TaskSequence,
     TaskWait
 )
+
+
+class FakeAudioPlayer(AudioPlayer):
+    def __init__(self):
+        self.is_playing = False
+
+    def play(self, filename: str) -> None:
+        self.filename = filename
+        self.is_playing = True
+
+    def stop(self) -> None:
+        self.is_playing = False
+
+    def tick(self) -> None:
+        pass
 
 
 def test_task_wait():
@@ -82,3 +101,15 @@ def test_task_code():
     task.on_button(Button.POUND)
     assert task.is_complete()
     assert task.code_string() == '123'
+
+
+def test_task_audio():
+    audio_player = FakeAudioPlayer()
+    task = TaskAudio(AudioTrack.INTRO, audio_player)
+    assert not task.is_complete()
+    task.start()
+    assert not task.is_complete()
+    assert audio_player.is_playing
+    assert audio_player.filename.endswith(AudioTrack.INTRO.value)
+    audio_player.stop()
+    assert task.is_complete()
