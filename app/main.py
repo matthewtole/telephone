@@ -3,7 +3,7 @@ import os
 from threading import Thread
 from telephone.input_manager import DesktopInputManager
 from telephone.telephone import Telephone
-import telephone.tasks  # noqa: F401
+import telephone.tasks
 
 from config import DATABSE_FILE, LOG_FILE, TEMP_DIR
 
@@ -28,8 +28,7 @@ if __name__ == "__main__":
     setup()
     db = Database(DATABSE_FILE)
     root_task = telephone.tasks.TaskSequence([
-        telephone.tasks.TaskChoice(),
-        telephone.tasks.TaskAudio(telephone.tasks.AudioTrack.INTRO)
+        telephone.tasks.TaskDemoCode()
     ])
 
     desktop = DesktopInputManager()

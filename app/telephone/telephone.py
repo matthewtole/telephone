@@ -16,6 +16,10 @@ class Telephone:
             if self.task.is_complete():
                 break
 
+            # if not self.input_manager.is_handset_up():
+            #     # TODO: Implement me
+            #     pass
+
             self.task.tick()
 
             button = self.input_manager.button_pressed()

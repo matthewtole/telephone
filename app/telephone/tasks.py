@@ -1,12 +1,22 @@
 from enum import Enum
 from time import time
 from os.path import join
-
+import logging
 from audio.player import AudioPlayer
 
 
 class AudioTrack(Enum):
     INTRO = "intro-01.wav"
+    # DIGIT_0 = "digits/0.wav"
+    DIGIT_1 = "digits/1.wav"
+    DIGIT_2 = "digits/2.wav"
+    DIGIT_3 = "digits/3.wav"
+    DIGIT_4 = "digits/4.wav"
+    DIGIT_5 = "digits/5.wav"
+    DIGIT_6 = "digits/6.wav"
+    DIGIT_7 = "digits/7.wav"
+    DIGIT_8 = "digits/8.wav"
+    DIGIT_9 = "digits/8.wav"
 
 
 class Button(Enum):
@@ -36,7 +46,7 @@ class Task:
         pass
 
     def is_complete(self) -> bool:
-        self.tick()
+        self.tick()  # TODO: Figure out if we need this
         return True
 
     def abort(self) -> None:
@@ -64,6 +74,50 @@ class TaskWait(Task):
 
     def __repr__(self) -> str:
         return "TaskWait(%f)" % (self.duration)
+
+
+class TaskAudioSequence(Task):
+    DIGIT_TRACKS = {
+        '1': AudioTrack.DIGIT_1,
+        '2': AudioTrack.DIGIT_2,
+        '3': AudioTrack.DIGIT_3,
+        '4': AudioTrack.DIGIT_4,
+        '5': AudioTrack.DIGIT_5,
+        '6': AudioTrack.DIGIT_6,
+        '7': AudioTrack.DIGIT_7,
+        '8': AudioTrack.DIGIT_8,
+        '9': AudioTrack.DIGIT_9,
+    }
+
+    def __init__(self, code: str, audio_player=AudioPlayer()) -> None:
+        super().__init__()
+        self.log = logging.getLogger("TaskAudioSequence")
+        self.code = code
+        self.index = 0
+        self.audio_player = audio_player
+
+    def play_next_track(self) -> None:
+        track = TaskAudioSequence.DIGIT_TRACKS[self.code[self.index]]
+        if track is None:
+            self.log.error("Could not find track for '%s'" % self.code[self.index])
+            return
+
+        self.audio_player.play(join('../audio', track.value))
+
+    def start(self) -> None:
+        super().start()
+        self.play_next_track()
+
+    def tick(self) -> None:
+        super().tick()
+        self.audio_player.tick()
+        if not self.audio_player.is_playing:
+            self.index = self.index + 1
+            if self.index < len(self.code):
+                self.play_next_track()
+
+    def is_complete(self) -> bool:
+        return self.index >= len(self.code) and not self.audio_player.is_playing
 
 
 class TaskAudio(Task):
@@ -197,3 +251,29 @@ class TaskCode(Task):
 
     def code_string(self) -> str:
         return ''.join(map(lambda c: str(c), self.code))
+
+
+class TaskDemoCode(Task):
+    def __init__(self) -> None:
+        super().__init__()
+        self.code_task = TaskCode()
+        self.audio_task = None
+
+    def start(self) -> None:
+        self.code_task.start()
+
+    def on_button(self, button: Button) -> None:
+        super().on_button(button)
+        self.code_task.on_button(button)
+
+    def tick(self) -> None:
+        if not self.code_task.is_complete():
+            self.code_task.tick()
+        elif self.audio_task is None:
+            self.audio_task = TaskAudioSequence(self.code_task.code_string())
+            self.audio_task.start()
+        elif not self.audio_task.is_complete():
+            self.audio_task.tick()
+
+    def is_complete(self) -> bool:
+        return self.code_task.is_complete() and self.audio_task is not None and self.audio_task.is_complete()

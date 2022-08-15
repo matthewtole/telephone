@@ -10,7 +10,7 @@ from .tasks import Button
 class InputManager:
     def __init__(self) -> None:
         self.is_running = False
-        self._handset_up = False
+        self._is_handset_up = False
 
     @abstractmethod
     def start(self) -> None:
@@ -20,8 +20,9 @@ class InputManager:
     def button_pressed(self) -> Optional[Button]:
         return None
 
+    @abstractmethod
     def is_handset_up(self) -> bool:
-        return self._handset_up
+        pass
 
 
 class CircuitBoard(InputManager):
@@ -67,6 +68,14 @@ class DesktopInputManager(InputManager):
         self.create_button(Button.STAR, "*").grid(column=1, row=3)
         self.create_button(Button.POUND, "#").grid(column=2, row=3)
 
+        self.checkbox_var = tk.BooleanVar(value=True)
+        checkbox = ttk.Checkbutton(self.root,
+                                   text='Is Handset Lifted?',
+                                   variable=self.checkbox_var,
+                                   onvalue=True,
+                                   offvalue=False)
+        checkbox.grid(row=4, column=0, columnspan=3)
+
     def start(self) -> None:
         self.__build_ui()
 
@@ -78,6 +87,9 @@ class DesktopInputManager(InputManager):
         b = self.last_button
         self.last_button = None
         return b
+
+    def is_handset_up(self) -> bool:
+        return self.checkbox_var.val()
 
     def stop(self):
         self.root.quit()
