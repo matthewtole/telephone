@@ -1,10 +1,10 @@
 import logging
 import os
 from threading import Thread
-from telephone.input_manager import DesktopInputManager
-from telephone.telephone import Telephone
-from telephone.button import Button
-import telephone.tasks
+from input_manager import DesktopInputManager
+from telephone import Telephone
+from button import Button
+import tasks
 
 from config import DATABSE_FILE, LOG_FILE, TEMP_DIR
 
@@ -25,10 +25,10 @@ def setup():
         pass
 
 
-class TaskDemoCode(telephone.tasks.Task):
+class TaskDemoCode(tasks.Task):
     def __init__(self) -> None:
         super().__init__()
-        self.code_task = telephone.tasks.TaskCode()
+        self.code_task = tasks.TaskCode()
         self.audio_task = None
 
     def start(self) -> None:
@@ -42,9 +42,7 @@ class TaskDemoCode(telephone.tasks.Task):
         if not self.code_task.is_complete():
             self.code_task.tick()
         elif self.audio_task is None:
-            self.audio_task = telephone.tasks.TaskAudioSequence(
-                self.code_task.code_string()
-            )
+            self.audio_task = tasks.TaskAudioSequence(self.code_task.code_string())
             self.audio_task.start()
         elif not self.audio_task.is_complete():
             self.audio_task.tick()
@@ -60,7 +58,7 @@ class TaskDemoCode(telephone.tasks.Task):
 if __name__ == "__main__":
     setup()
     db = Database(DATABSE_FILE)
-    root_task = telephone.tasks.TaskLoop(telephone.tasks.TaskSequence([TaskDemoCode()]))
+    root_task = tasks.TaskLoop(tasks.TaskSequence([TaskDemoCode()]))
 
     desktop = DesktopInputManager()
     phone = Telephone(desktop, root_task)

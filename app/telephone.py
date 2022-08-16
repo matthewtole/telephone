@@ -1,7 +1,6 @@
-
 from time import sleep
-from .tasks import Task
-from .input_manager import InputManager
+from tasks import Task
+from input_manager import InputManager
 
 
 class Telephone:

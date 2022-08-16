@@ -4,7 +4,7 @@ from os.path import join
 import logging
 
 from audio.player import AudioPlayer
-from .button import Button
+from button import Button
 
 
 class AudioTrack(Enum):
@@ -18,7 +18,7 @@ class AudioTrack(Enum):
     DIGIT_6 = "digits/6.wav"
     DIGIT_7 = "digits/7.wav"
     DIGIT_8 = "digits/8.wav"
-    DIGIT_9 = "digits/8.wav"
+    DIGIT_9 = "digits/9.wav"
 
 
 class Task:
@@ -157,7 +157,7 @@ class TaskAudioSequence(TaskAudio):
             self._log.error("Could not find track for '%s'" % self._code[self._index])
             return
 
-        self._audio_player.play(join("../audio", track.value))
+        self._audio_player.play(join("audio", track.value))
 
     def start(self) -> None:
         super().start()
@@ -188,7 +188,7 @@ class TaskAudioTrack(TaskAudio):
 
     def start(self) -> None:
         self.has_played = True
-        self._audio_player.play(join("../audio", self.track.value))
+        self._audio_player.play(join("audio", self.track.value))
 
     def is_complete(self) -> bool:
         self.tick()

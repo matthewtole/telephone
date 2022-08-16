@@ -1,7 +1,7 @@
 import time
 
-from ...audio.player import AudioPlayer
-from ..tasks import (
+from audio.player import AudioPlayer
+from tasks import (
     AudioTrack,
     Button,
     TaskAll,

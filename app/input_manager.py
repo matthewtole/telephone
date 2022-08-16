@@ -4,7 +4,7 @@ from tkinter import ttk
 from functools import partial
 from typing import Optional
 
-from .button import Button
+from button import Button
 
 
 class InputManager:
