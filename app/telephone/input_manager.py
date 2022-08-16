@@ -4,7 +4,7 @@ from tkinter import ttk
 from functools import partial
 from typing import Optional
 
-from .tasks import Button
+from .button import Button
 
 
 class InputManager:
@@ -41,7 +41,7 @@ class DesktopInputManager(InputManager):
         return ttk.Button(
             self.root,
             text=str(button.value) if label is None else label,
-            command=partial(self.set_button, button)
+            command=partial(self.set_button, button),
         )
 
     def __init__(self) -> None:
@@ -54,26 +54,25 @@ class DesktopInputManager(InputManager):
 
     def __build_ui(self):
         self.root = tk.Tk()
-        self.root.geometry('640x480')
+        self.root.geometry("640x480")
         self.root.resizable(False, False)
-        self.root.title('Telephone')
+        self.root.title("Telephone")
 
         for b in range(9):
-            self.create_button(list(Button)[b+1]).grid(
-                column=b % 3,
-                row=int(b/3)
-            )
+            self.create_button(list(Button)[b + 1]).grid(column=b % 3, row=int(b / 3))
 
         self.create_button(Button.NUM_0).grid(column=0, row=3)
         self.create_button(Button.STAR, "*").grid(column=1, row=3)
         self.create_button(Button.POUND, "#").grid(column=2, row=3)
 
         self.checkbox_var = tk.BooleanVar(value=True)
-        checkbox = ttk.Checkbutton(self.root,
-                                   text='Is Handset Lifted?',
-                                   variable=self.checkbox_var,
-                                   onvalue=True,
-                                   offvalue=False)
+        checkbox = ttk.Checkbutton(
+            self.root,
+            text="Is Handset Lifted?",
+            variable=self.checkbox_var,
+            onvalue=True,
+            offvalue=False,
+        )
         checkbox.grid(row=4, column=0, columnspan=3)
 
     def start(self) -> None:

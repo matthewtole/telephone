@@ -6,10 +6,11 @@ from ..tasks import (
     Button,
     TaskAll,
     TaskAny,
-    TaskAudio,
+    TaskAudioTrack,
     TaskAudioSequence,
     TaskChoice,
     TaskCode,
+    TaskLoop,
     TaskSequence,
     TaskWait,
 )
@@ -110,7 +111,7 @@ def test_task_code():
 
 def test_task_audio():
     audio_player = FakeAudioPlayer()
-    task = TaskAudio(AudioTrack.INTRO, audio_player)
+    task = TaskAudioTrack(AudioTrack.INTRO, audio_player)
     assert not task.is_complete()
     task.start()
     assert not task.is_complete()
@@ -142,4 +143,19 @@ def test_task_audio_sequence():
     assert audio_player.filename.endswith("/3.wav")
     audio_player.stop()
     task.tick()
+    assert task.is_complete()
+
+
+def test_task_loop():
+    inner_task = TaskWait(0.1)
+    task = TaskLoop(inner_task)
+    task.start()
+    assert not task.is_complete()
+    time.sleep(0.15)
+    task.tick()
+    assert not task.is_complete()
+    time.sleep(0.15)
+    task.tick()
+    assert not task.is_complete()
+    task.abort()
     assert task.is_complete()
