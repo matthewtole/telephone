@@ -269,6 +269,7 @@ class TaskLoop(TaskRunTask):
     def tick(self) -> None:
         super().tick()
         if self.task.is_complete():
+            print("LOOP!")
             self.reset()
 
     def is_complete(self) -> bool:

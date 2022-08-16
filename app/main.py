@@ -54,11 +54,17 @@ class TaskDemoCode(tasks.Task):
             and self.audio_task.is_complete()
         )
 
+    def reset(self) -> None:
+        self.code_task.abort()
+        self.audio_task.abort() if self.audio_task is not None else None
+        self.code_task = tasks.TaskCode()
+        self.audio_task = None
+
 
 if __name__ == "__main__":
     setup()
     db = Database(DATABSE_FILE)
-    root_task = tasks.TaskLoop(tasks.TaskSequence([TaskDemoCode()]))
+    root_task = tasks.TaskLoop(TaskDemoCode())
 
     desktop = DesktopInputManager()
     phone = Telephone(desktop, root_task)
