@@ -32,7 +32,8 @@ class TableRecording:
         play_count      INT NOT NULl DEFAULT 0,
         last_played_at  TIMESTAMP
       )
-""")
+"""
+        )
 
     def insert(self, duration: int) -> int:
         self.cursor.execute(
@@ -50,7 +51,8 @@ class TableRecording:
 
     def list_with_play_count(self, count: int) -> List[Recording]:
         result = self.cursor.execute(
-            "SELECT * FROM recordings WHERE play_count=%d" % count).fetchall()
+            "SELECT * FROM recordings WHERE play_count=%d" % count
+        ).fetchall()
         return list(map(lambda r: Recording(*r), result))
 
     def list_unplayed(self) -> List[Recording]:
@@ -58,7 +60,8 @@ class TableRecording:
 
     def play(self, id: int) -> None:
         self.cursor.execute(
-            "UPDATE recordings SET play_count=play_count+1 WHERE id=%d" % id)
+            "UPDATE recordings SET play_count=play_count+1 WHERE id=%d" % id
+        )
         self.connection.commit()
 
 

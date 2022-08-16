@@ -1,3 +1,3 @@
-LOG_FILE = 'telephone.log'
-DATABSE_FILE = 'telephone.db'
-TEMP_DIR = 'temp'
+LOG_FILE = "telephone.log"
+DATABSE_FILE = "telephone.db"
+TEMP_DIR = "temp"
