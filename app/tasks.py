@@ -1,24 +1,9 @@
-from enum import Enum
 from time import time
 from os.path import join
-import logging
 
 from audio.player import AudioPlayer
 from button import Button
-
-
-class AudioTrack(Enum):
-    INTRO = "intro-01.wav"
-    # DIGIT_0 = "digits/0.wav"
-    DIGIT_1 = "digits/1.wav"
-    DIGIT_2 = "digits/2.wav"
-    DIGIT_3 = "digits/3.wav"
-    DIGIT_4 = "digits/4.wav"
-    DIGIT_5 = "digits/5.wav"
-    DIGIT_6 = "digits/6.wav"
-    DIGIT_7 = "digits/7.wav"
-    DIGIT_8 = "digits/8.wav"
-    DIGIT_9 = "digits/9.wav"
+from audio_track import AudioTrack, DIGIT_TRACKS
 
 
 class Task:
@@ -115,6 +100,10 @@ class TaskWait(Task):
 
 
 class TaskAudio(Task):
+    """
+    Base class for Tasks that play audio files.
+    """
+
     def __init__(self, audio_player=AudioPlayer()) -> None:
         super().__init__()
         self._audio_player = audio_player
@@ -126,58 +115,6 @@ class TaskAudio(Task):
     def abort(self) -> None:
         super().abort()
         self._audio_player.stop()
-
-
-class TaskAudioSequence(TaskAudio):
-    """
-    Task for reading out a sequence of numbers using an AudioPlayer.
-    """
-
-    DIGIT_TRACKS = {
-        "1": AudioTrack.DIGIT_1,
-        "2": AudioTrack.DIGIT_2,
-        "3": AudioTrack.DIGIT_3,
-        "4": AudioTrack.DIGIT_4,
-        "5": AudioTrack.DIGIT_5,
-        "6": AudioTrack.DIGIT_6,
-        "7": AudioTrack.DIGIT_7,
-        "8": AudioTrack.DIGIT_8,
-        "9": AudioTrack.DIGIT_9,
-    }
-
-    def __init__(self, code: str, audio_player=AudioPlayer()) -> None:
-        super().__init__(audio_player=audio_player)
-        self._log = logging.getLogger("TaskAudioSequence")
-        self._code = code
-        self._index = 0
-
-    def _play_next_track(self) -> None:
-        track = TaskAudioSequence.DIGIT_TRACKS[self._code[self._index]]
-        if track is None:
-            self._log.error("Could not find track for '%s'" % self._code[self._index])
-            return
-
-        self._audio_player.play(join("audio", track.value))
-
-    def start(self) -> None:
-        super().start()
-        self._play_next_track()
-
-    def tick(self) -> None:
-        super().tick()
-        self._audio_player.tick()
-        if not self._audio_player.is_playing:
-            self._index = self._index + 1
-            if self._index < len(self._code):
-                self._play_next_track()
-
-    def is_complete(self) -> bool:
-        return self._index >= len(self._code) and not self._audio_player.is_playing
-
-    def reset(self) -> None:
-        self._audio_player.stop()
-        self._index = 0
-        self.start()
 
 
 class TaskAudioTrack(TaskAudio):
@@ -340,3 +277,14 @@ class TaskLoop(TaskRunTask):
     def abort(self) -> None:
         super().abort()
         self.task = None
+
+
+class TaskAudioSequence(TaskSequence):
+    """
+    Task for reading out a sequence of numbers using an AudioPlayer.
+    """
+
+    def __init__(self, code: str, audio_player=AudioPlayer()) -> None:
+        super().__init__(
+            list(map(lambda c: TaskAudioTrack(DIGIT_TRACKS[c], audio_player), code))
+        )
