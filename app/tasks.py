@@ -1,7 +1,9 @@
+import logging
 from time import time
 from os.path import join
 
 from audio.player import AudioPlayer
+from audio.recorder import AudioRecorder
 from button import Button
 from audio_track import AudioTrack, DIGIT_TRACKS
 
@@ -12,6 +14,7 @@ class Task:
     """
 
     def __init__(self) -> None:
+        self.log = logging.getLogger(self.__class__.__name__)
         pass
 
     def tick(self) -> None:
@@ -21,10 +24,9 @@ class Task:
         pass
 
     def is_complete(self) -> bool:
-        self.tick()  # TODO: Figure out if we need this
         return True
 
-    def abort(self) -> None:
+    def stop(self) -> None:
         pass
 
     def on_button(self, button: Button) -> None:
@@ -57,8 +59,8 @@ class TaskRunTask(Task):
     def is_complete(self) -> bool:
         return self.task.is_complete() if self.task is not None else False
 
-    def abort(self) -> None:
-        self.task.abort() if self.task is not None else None
+    def stop(self) -> None:
+        self.task.stop() if self.task is not None else None
 
     def on_button(self, button: Button) -> None:
         self.task.on_button(button) if self.task is not None else None
@@ -89,14 +91,11 @@ class TaskWait(Task):
         self.tick()
         return self._end_time > 0 and time() >= self._end_time
 
-    def abort(self) -> None:
+    def stop(self) -> None:
         self._end_time = time()
 
-    def __repr__(self) -> str:
-        return "TaskWait(%f)" % (self.duration)
-
     def reset(self) -> None:
-        self.start()
+        self._end_time = -1
 
 
 class TaskAudio(Task):
@@ -107,33 +106,36 @@ class TaskAudio(Task):
     def __init__(self, audio_player=AudioPlayer()) -> None:
         super().__init__()
         self._audio_player = audio_player
+        self._has_played = False
+
+    def start(self) -> None:
+        self._has_played = True
 
     def tick(self) -> None:
         super().tick()
         self._audio_player.tick()
 
-    def abort(self) -> None:
-        super().abort()
+    def is_complete(self) -> bool:
+        self.tick()
+        return not self._audio_player.is_playing and self._has_played is True
+
+    def stop(self) -> None:
+        super().stop()
         self._audio_player.stop()
+
+    def reset(self):
+        super().stop()
+        self._has_played = False
 
 
 class TaskAudioTrack(TaskAudio):
     def __init__(self, track: AudioTrack, audio_player=AudioPlayer()) -> None:
         super().__init__(audio_player)
         self.track = track
-        self.has_played = False
 
     def start(self) -> None:
-        self.has_played = True
+        super().start()
         self._audio_player.play(join("audio", self.track.value))
-
-    def is_complete(self) -> bool:
-        self.tick()
-        return not self._audio_player.is_playing and self.has_played is True
-
-    def reset(self):
-        self._audio_player.stop()
-        self.start()
 
 
 class TaskChoice(Task):
@@ -147,7 +149,7 @@ class TaskChoice(Task):
     def is_complete(self) -> bool:
         return self.choice is not None
 
-    def abort(self) -> None:
+    def stop(self) -> None:
         self.choice = -1
 
     def reset(self) -> None:
@@ -167,16 +169,15 @@ class TaskMany(Task):
         for task in self.sub_tasks:
             task.tick()
 
-    def abort(self) -> None:
+    def stop(self) -> None:
         for task in self.sub_tasks:
             if not task.is_complete():
-                task.abort()
+                task.stop()
 
     def reset(self):
-        self.abort()
+        self.stop()
         for task in self.sub_tasks:
             task.reset()
-        self.start()
 
 
 class TaskAll(TaskMany):
@@ -195,7 +196,7 @@ class TaskAny(TaskMany):
                 has_complete_task = True
                 break
         if has_complete_task:
-            self.abort()
+            self.stop()
         return has_complete_task
 
 
@@ -209,6 +210,7 @@ class TaskSequence(TaskRunTask):
         if self.index < len(self.tasks):
             self.task = self.tasks[self.index]
             self.task.start()
+            self.log.info("Starting %s" % self.task.__class__.__name__)
 
     def start(self):
         self.start_next_task()
@@ -227,10 +229,9 @@ class TaskSequence(TaskRunTask):
 
     def reset(self):
         for task in self.tasks:
-            task.abort()
+            task.stop()
             task.reset()
         self.index = 0
-        self.start()
 
 
 class TaskCode(Task):
@@ -248,9 +249,9 @@ class TaskCode(Task):
         elif button.value < 100:
             self.code.append(button.value)
 
-    def abort(self) -> None:
+    def stop(self) -> None:
         self.code = []
-        super().abort()
+        super().stop()
 
     def code_string(self) -> str:
         return "".join(map(lambda c: str(c), self.code))
@@ -258,7 +259,6 @@ class TaskCode(Task):
     def reset(self):
         self.code_completed = False
         self.code = []
-        self.start()
 
 
 class TaskLoop(TaskRunTask):
@@ -269,14 +269,14 @@ class TaskLoop(TaskRunTask):
     def tick(self) -> None:
         super().tick()
         if self.task.is_complete():
-            print("LOOP!")
             self.reset()
+            self.start()
 
     def is_complete(self) -> bool:
         return self.task is None
 
-    def abort(self) -> None:
-        super().abort()
+    def stop(self) -> None:
+        super().stop()
         self.task = None
 
 
@@ -289,3 +289,44 @@ class TaskAudioSequence(TaskSequence):
         super().__init__(
             list(map(lambda c: TaskAudioTrack(DIGIT_TRACKS[c], audio_player), code))
         )
+
+
+class TaskRecord(Task):
+    def __init__(self, filename: str, audio_recorder=AudioRecorder()) -> None:
+        super().__init__()
+        self._audio_recorder = audio_recorder
+        self._filename = filename
+        self._is_complete = False
+
+    def start(self):
+        self._audio_recorder.start()
+
+    def tick(self):
+        self._audio_recorder.tick()
+
+    def on_button(self, button: Button) -> None:
+        if button == Button.POUND:
+            self._audio_recorder.stop()
+            self._audio_recorder.save(self._filename)
+            self._is_complete = True
+
+    def stop(self) -> None:
+        self._audio_recorder.stop()
+
+    def is_complete(self) -> bool:
+        return self._is_complete
+
+    def reset(self):
+        self.stop()
+        self._audio_recorder.reset()
+        self._is_complete = False
+
+
+class TaskPlayback(TaskAudio):
+    def __init__(self, filename: str, audio_player=AudioPlayer()) -> None:
+        super().__init__(audio_player)
+        self._filename = filename
+
+    def start(self) -> None:
+        super().start()
+        self._audio_player.play(self._filename)

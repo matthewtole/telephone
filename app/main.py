@@ -1,6 +1,7 @@
 import logging
 import os
 from threading import Thread
+from audio_track import AudioTrack
 from input_manager import DesktopInputManager
 from telephone import Telephone
 from button import Button
@@ -55,8 +56,8 @@ class TaskDemoCode(tasks.Task):
         )
 
     def reset(self) -> None:
-        self.code_task.abort()
-        self.audio_task.abort() if self.audio_task is not None else None
+        self.code_task.stop()
+        self.audio_task.stop() if self.audio_task is not None else None
         self.code_task = tasks.TaskCode()
         self.audio_task = None
 
@@ -64,7 +65,18 @@ class TaskDemoCode(tasks.Task):
 if __name__ == "__main__":
     setup()
     db = Database(DATABSE_FILE)
-    root_task = tasks.TaskLoop(TaskDemoCode())
+    demo_file = os.path.join(TEMP_DIR, "demo.wav")
+    root_task = tasks.TaskLoop(
+        tasks.TaskSequence(
+            [
+                tasks.TaskAudioTrack(AudioTrack.LEAVE_MESSAGE),
+                tasks.TaskRecord(demo_file),
+                tasks.TaskWait(0.5),
+                tasks.TaskPlayback(demo_file),
+                tasks.TaskWait(0.5),
+            ]
+        )
+    )
 
     desktop = DesktopInputManager()
     phone = Telephone(desktop, root_task)

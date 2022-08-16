@@ -157,5 +157,5 @@ def test_task_loop():
     time.sleep(0.15)
     task.tick()
     assert not task.is_complete()
-    task.abort()
+    task.stop()
     assert task.is_complete()

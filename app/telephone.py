@@ -28,4 +28,4 @@ class Telephone:
             sleep(0.1)
 
         self.input_manager.stop()
-        self.task.abort()
+        self.task.stop()

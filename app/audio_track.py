@@ -3,6 +3,7 @@ from enum import Enum
 
 class AudioTrack(Enum):
     INTRO = "intro-01.wav"
+    LEAVE_MESSAGE = "leave-message.wav"
     # DIGIT_0 = "digits/0.wav"
     DIGIT_1 = "digits/1.wav"
     DIGIT_2 = "digits/2.wav"
