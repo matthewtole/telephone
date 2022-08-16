@@ -292,11 +292,14 @@ class TaskAudioSequence(TaskSequence):
 
 
 class TaskRecord(Task):
-    def __init__(self, filename: str, audio_recorder=AudioRecorder()) -> None:
+    def __init__(
+        self, filename: str, end_button=Button.STAR, audio_recorder=AudioRecorder()
+    ) -> None:
         super().__init__()
         self._audio_recorder = audio_recorder
         self._filename = filename
         self._is_complete = False
+        self._end_button = end_button
 
     def start(self):
         self._audio_recorder.start()
@@ -305,7 +308,7 @@ class TaskRecord(Task):
         self._audio_recorder.tick()
 
     def on_button(self, button: Button) -> None:
-        if button == Button.POUND:
+        if button == self._end_button:
             self._audio_recorder.stop()
             self._audio_recorder.save(self._filename)
             self._is_complete = True

@@ -6,10 +6,16 @@ flowchart TD
     start --> play.intro
     play.intro --> intro.input
     intro.input -->|1| record.intro
-    intro.input -->|2| message.random
+    intro.input -->|2| message.intro
     record.intro --> record.audio
     record.audio -->  record.after
-    record.after --> play.intro
+    record.after --> message.input
+    message.intro --> message.input
+    message.input -->|star| message.random
     message.random --> message.play
-    message.play --> play.intro
+    message.input -->|code| message.play
+    message.play --> message.after
+    message.after --> message.input
 ```
+
+  
