@@ -337,6 +337,7 @@ class TaskRecordMessage(TaskRunTask):
         self._audio_recorder = audio_recorder
         self._DB = DB
         self.setup()
+        self._start_time = 0
 
     def setup(self):
         self._filename = "%s.wav" % uuid.uuid4().hex
@@ -345,11 +346,16 @@ class TaskRecordMessage(TaskRunTask):
         )
         self._messaged_saved = False
 
+    def start(self) -> None:
+        self._start_time = time()
+        super().start()
+
     def tick(self):
         super().tick()
-        if self.task.is_complete():
-            self._DB(DATABASE_FILE).messages.insert(self._filename, 0)
+        if self.task.is_complete() and not self._messaged_saved:
             self._messaged_saved = True
+            duration = time() - self._start_time
+            self._DB(DATABASE_FILE).messages.insert(self._filename, int(duration))
 
     def is_complete(self) -> bool:
         return super().is_complete() and self._messaged_saved

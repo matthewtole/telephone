@@ -57,7 +57,7 @@ class TableMessages:
 
     def list_with_play_count(self, count: int) -> List[Message]:
         result = self.cursor.execute(
-            "SELECT * FROM %s WHERE play_count=%d" % (TableMessages.TABLE_NAME, count)
+            "SELECT * FROM %s WHERE play_count=?" % (TableMessages.TABLE_NAME), count
         ).fetchall()
         return list(map(lambda r: Message(*r), result))
 
@@ -66,8 +66,9 @@ class TableMessages:
 
     def play(self, id: int) -> None:
         self.cursor.execute(
-            "UPDATE %s SET play_count=play_count+1 WHERE id=%d"
-            % (TableMessages.TABLE_NAME, id)
+            "UPDATE %s SET play_count=play_count+1, last_played_at=? WHERE id=?"
+            % (TableMessages.TABLE_NAME),
+            (datetime.datetime.now(), id),
         )
         self.connection.commit()
 
@@ -80,7 +81,7 @@ class TableMessages:
 
 class Database:
     def __init__(self, db: str):
-        self.connection = sqlite3.connect(db)
+        self.connection = sqlite3.connect(db, detect_types=sqlite3.PARSE_DECLTYPES)
         self.cursor = self.connection.cursor()
         self.log = logging.getLogger("Database")
         self.messages = TableMessages(self.connection, self.log)
