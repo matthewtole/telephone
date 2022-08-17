@@ -14,6 +14,10 @@ class Message(NamedTuple):
 
 
 class TableMessages:
+    """
+    Database table for managing the recorded messages.
+    """
+
     TABLE_NAME = "messages"
 
     def __init__(self, connection: sqlite3.Connection, log: logging.Logger):
@@ -50,21 +54,34 @@ class TableMessages:
         return self.cursor.lastrowid
 
     def get(self, id: int) -> Message:
+        """
+        Get a single message given the ID
+        """
         result = self.cursor.execute(
             "SELECT * FROM %s WHERE id=%d" % (TableMessages.TABLE_NAME, id)
         ).fetchone()
         return Message(*result)
 
     def list_with_play_count(self, count: int) -> List[Message]:
+        """
+        Get all of the messages with the given number of play counts.
+        """
         result = self.cursor.execute(
             "SELECT * FROM %s WHERE play_count=%d" % (TableMessages.TABLE_NAME, count)
         ).fetchall()
         return list(map(lambda r: Message(*r), result))
 
     def list_unplayed(self) -> List[Message]:
+        """
+        Get all of the messages that haven't been played yet.
+        """
         return self.list_with_play_count(0)
 
     def play(self, id: int) -> None:
+        """
+        Mark a message as being played.
+        Increases the play count by 1 and sets the last played at timestamp to the current time
+        """
         self.cursor.execute(
             "UPDATE %s SET play_count=play_count+1, last_played_at=? WHERE id=?"
             % (TableMessages.TABLE_NAME),
@@ -73,6 +90,9 @@ class TableMessages:
         self.connection.commit()
 
     def count(self) -> int:
+        """
+        Return the total count of messages
+        """
         result = self.cursor.execute(
             "SELECT COUNT(*) as count FROM %s" % TableMessages.TABLE_NAME
         ).fetchone()
