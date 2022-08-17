@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <title>Telephone</title>
+  </head>
+  <body>
+    <div id="app">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Filename</th>
+            <th>Created</th>
+            <th>Duration</th>
+            <th># Plays</th>
+            <th>Last Play</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="{ id, filename, created_at, duration, play_count, last_played_at } in messages"
+          >
+            <td>{{ id }}</td>
+            <td><a :href="'/messages/' + filename">{{ filename }}</a></td>
+            <td>{{ created_at }}</td>
+            <td>{{ duration }}</td>
+            <td>{{ play_count }}</td>
+            <td>{{ last_played_at }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+      const API_URL = `/api`;
+
+      var app = new Vue({
+        el: "#app",
+        data: () => ({
+          messages: null,
+        }),
+        created() {
+          this.fetchData();
+        },
+        methods: {
+          message_path(filename) {
+            return `/messages/${message_path}`;
+          },
+          async fetchData() {
+            const url = `${API_URL}/messages`;
+            this.messages = await (await fetch(url)).json();
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
