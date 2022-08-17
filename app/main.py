@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     root_task = tasks.TaskSequence(
         [
-            # tasks.TaskAudioTrack(AudioTrack.INTRO),
+            tasks.TaskAudioTrack(AudioTrack.INTRO),
             tasks.TaskLoop(
                 tasks.TaskSequence(
                     [
@@ -49,12 +49,12 @@ if __name__ == "__main__":
                             {
                                 1: tasks.TaskSequence(
                                     [
-                                        # tasks.TaskAudioTrack(AudioTrack.RECORD_INTRO),
-                                        # tasks.TaskWait(0.5),
+                                        tasks.TaskAudioTrack(AudioTrack.RECORD_INTRO),
+                                        tasks.TaskWait(0.5),
                                         tasks.TaskAudioTrack(AudioTrack.BEEP),
                                         tasks.TaskRecordMessage(),
-                                        # tasks.TaskWait(0.5),
-                                        # tasks.TaskAudioTrack(AudioTrack.RECORD_OUTRO),
+                                        tasks.TaskWait(0.5),
+                                        tasks.TaskAudioTrack(AudioTrack.RECORD_OUTRO),
                                     ]
                                 ),
                                 2: tasks.TaskPlayMessage(),
