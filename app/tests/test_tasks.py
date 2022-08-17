@@ -1,4 +1,5 @@
 import time
+from ..tasks import TaskDecisionTree
 
 from audio.player import AudioPlayer
 from tasks import (
@@ -158,4 +159,21 @@ def test_task_loop():
     task.tick()
     assert not task.is_complete()
     task.stop()
+    assert task.is_complete()
+
+
+def test_task_decision_tree():
+    task = TaskDecisionTree(
+        {Button.NUM_0.value: TaskWait(0.1), Button.NUM_1.value: TaskWait(0.2)}
+    )
+    task.start()
+    assert not task.is_complete()
+    time.sleep(0.15)
+    task.tick()
+    assert not task.is_complete()
+    task.on_button(Button.NUM_0)
+    task.tick()
+    assert not task.is_complete()
+    time.sleep(0.15)
+    task.tick()
     assert task.is_complete()

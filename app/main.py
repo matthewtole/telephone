@@ -62,21 +62,43 @@ class TaskDemoCode(tasks.Task):
         self.audio_task = None
 
 
+def task_demo_02():
+    demo_file = os.path.join(TEMP_DIR, "demo.wav")
+    return tasks.TaskSequence(
+        [
+            tasks.TaskAudioTrack(AudioTrack.LEAVE_MESSAGE),
+            tasks.TaskRecord(demo_file),
+            tasks.TaskWait(0.5),
+            tasks.TaskPlayback(demo_file),
+            tasks.TaskWait(0.5),
+        ]
+    )
+
+
+def task_demo_03():
+    """
+    Demo task for testing the decision tree logic.
+    """
+    return tasks.TaskDecisionTree(
+        {
+            1: tasks.TaskAudioTrack(AudioTrack.DIGIT_1),
+            2: tasks.TaskAudioTrack(AudioTrack.DIGIT_2),
+            3: tasks.TaskAudioTrack(AudioTrack.DIGIT_3),
+            4: tasks.TaskAudioTrack(AudioTrack.DIGIT_4),
+            5: tasks.TaskAudioTrack(AudioTrack.DIGIT_5),
+            6: tasks.TaskAudioTrack(AudioTrack.DIGIT_6),
+            7: tasks.TaskAudioTrack(AudioTrack.DIGIT_7),
+            8: tasks.TaskAudioTrack(AudioTrack.DIGIT_8),
+            9: tasks.TaskAudioTrack(AudioTrack.DIGIT_9),
+        }
+    )
+
+
 if __name__ == "__main__":
     setup()
     db = Database(DATABSE_FILE)
-    demo_file = os.path.join(TEMP_DIR, "demo.wav")
-    root_task = tasks.TaskLoop(
-        tasks.TaskSequence(
-            [
-                tasks.TaskAudioTrack(AudioTrack.LEAVE_MESSAGE),
-                tasks.TaskRecord(demo_file),
-                tasks.TaskWait(0.5),
-                tasks.TaskPlayback(demo_file),
-                tasks.TaskWait(0.5),
-            ]
-        )
-    )
+
+    root_task = TaskDemoCode()
 
     desktop = DesktopInputManager()
     phone = Telephone(desktop, root_task)

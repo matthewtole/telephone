@@ -1,12 +1,12 @@
 from time import sleep
-from tasks import Task
+from tasks import Task, TaskLoop
 from input_manager import InputManager
 
 
 class Telephone:
-    def __init__(self, input_manager: InputManager, task: Task) -> None:
+    def __init__(self, input_manager: InputManager, task: Task, loop=True) -> None:
         self.input_manager = input_manager
-        self.task = task
+        self.task = TaskLoop(task) if loop else task
 
     def start(self):
         self.task.start()

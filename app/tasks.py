@@ -1,6 +1,7 @@
 import logging
 from time import time
 from os.path import join
+from typing import Optional
 
 from audio.player import AudioPlayer
 from audio.recorder import AudioRecorder
@@ -141,7 +142,7 @@ class TaskAudioTrack(TaskAudio):
 class TaskChoice(Task):
     def __init__(self) -> None:
         super().__init__()
-        self.choice = None
+        self.choice: Optional[int] = None
 
     def on_button(self, button: Button):
         self.choice = button.value
@@ -333,3 +334,35 @@ class TaskPlayback(TaskAudio):
     def start(self) -> None:
         super().start()
         self._audio_player.play(self._filename)
+
+
+class TaskDecisionTree(TaskRunTask):
+    def __init__(
+        self,
+        tree: dict[int, Task],
+    ) -> None:
+        super().__init__()
+        self._tree = tree
+        self.task = TaskChoice()
+        self.has_chosen = False
+
+    def tick(self) -> None:
+        super().tick()
+        if not self.has_chosen and self.task.is_complete():
+            choice = self.task.choice
+            self.task = self._tree.get(self.task.choice)
+            if self.task is None:
+                self.log.warn("Invalid choice %d" % choice)
+            else:
+                self.has_chosen = True
+                self.task.start()
+
+    def is_complete(self) -> bool:
+        if self.task is None:
+            return False
+        return self.has_chosen and self.task.is_complete()
+
+    def reset(self) -> None:
+        super().reset()
+        self.has_chosen = False
+        self.task = TaskChoice()
