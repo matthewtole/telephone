@@ -14,6 +14,7 @@ class AudioRecorder:
         self.is_recording = False
         self.log = logging.getLogger("Audio.Recorder")
         self.stream = None
+        self.frames: list[bytes] = []
 
     def start(self):
         self.log.debug("Starting a recording session")
@@ -30,6 +31,7 @@ class AudioRecorder:
     def tick(self) -> None:
         if (
             self.is_recording
+            and self.stream is not None
             and self.stream.get_read_available() >= AudioRecorder.CHUNK
         ):
             data = self.stream.read(AudioRecorder.CHUNK)

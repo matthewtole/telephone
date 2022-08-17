@@ -1,4 +1,5 @@
 import logging
+from typing import Mapping, Optional
 import pyaudio
 import wave
 
@@ -11,7 +12,13 @@ class AudioPlayer:
         self.log = logging.getLogger("Audio.Player")
         self.stream = None
 
-    def callback(self, in_data, frame_count, time_info, status):
+    def callback(
+        self,
+        in_data: Optional[bytes],
+        frame_count: int,
+        time_info: Mapping[str, float],
+        status: int,
+    ):
         data = self.wave_file.readframes(frame_count)
         return (data, pyaudio.paContinue)
 
@@ -35,7 +42,7 @@ class AudioPlayer:
             self.stream.stop_stream()
 
     def tick(self) -> None:
-        if self.is_playing and not self.stream.is_active():
+        if self.is_playing and self.stream is not None and not self.stream.is_active():
             self.stream.stop_stream()
             self.stream.close()
             self.wave_file.close()

@@ -24,8 +24,11 @@ jobs:
         run: |
           sudo apt install -y portaudio19-dev 
           python -m pip install --upgrade pip
-          pip install flake8 pytest
+          pip install flake8 pytest pyright
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Static typing with pyright
+        working-directory: app
+        run: pyright
       - name: Lint with flake8
         working-directory: app
         run: |
