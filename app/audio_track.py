@@ -4,6 +4,11 @@ from enum import Enum
 class AudioTrack(Enum):
     INTRO = "intro-01.wav"
     LEAVE_MESSAGE = "leave-message.wav"
+    MENU_1 = "menu-1.wav"
+    RECORD_INTRO = "record-intro.wav"
+    RECORD_OUTRO = "record-outro.wav"
+    BEEP = "beep.wav"
+
     # DIGIT_0 = "digits/0.wav"
     DIGIT_1 = "digits/1.wav"
     DIGIT_2 = "digits/2.wav"

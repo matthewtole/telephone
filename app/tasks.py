@@ -1,7 +1,11 @@
+from os import path
+import uuid
 import logging
 from time import time
 from os.path import join
 from typing import Optional
+from config import TEMP_DIR, DATABSE_FILE
+from database import Database
 
 from audio.player import AudioPlayer
 from audio.recorder import AudioRecorder
@@ -326,6 +330,34 @@ class TaskRecord(Task):
         self._is_complete = False
 
 
+class TaskRecordMessage(TaskRunTask):
+    def __init__(self, audio_recorder=AudioRecorder()) -> None:
+        super().__init__()
+        self._audio_recorder = audio_recorder
+        self._filename = "%s.wav" % uuid.uuid4().hex
+        self.task = TaskRecord(
+            path.join(TEMP_DIR, self._filename), audio_recorder=audio_recorder
+        )
+        self._messaged_saved = False
+
+    def tick(self):
+        super().tick()
+        if self.task.is_complete():
+            Database(DATABSE_FILE).messages.insert(self._filename, 0)
+            self._messaged_saved = True
+
+    def is_complete(self) -> bool:
+        return super().is_complete() and self._messaged_saved
+
+    def reset(self) -> None:
+        self._filename = "%s.wav" % uuid.uuid4().hex
+        self.task = TaskRecord(
+            path.join(TEMP_DIR, self._filename), audio_recorder=self._audio_recorder
+        )
+        self._messaged_saved = False
+        return super().reset()
+
+
 class TaskPlayback(TaskAudio):
     def __init__(self, filename: str, audio_player=AudioPlayer()) -> None:
         super().__init__(audio_player)
@@ -334,6 +366,18 @@ class TaskPlayback(TaskAudio):
     def start(self) -> None:
         super().start()
         self._audio_player.play(self._filename)
+
+
+class TaskPlayMessage(TaskRunTask):
+    def __init__(self, audio_player=AudioPlayer()) -> None:
+        super().__init__()
+        self._audio_player = audio_player
+
+    def start(self) -> None:
+        unplayed_messages = Database(DATABSE_FILE).messages.list_unplayed()
+        message = unplayed_messages[-1]
+        self.task = TaskPlayback(join(TEMP_DIR, message.filename), self._audio_player)
+        super().start()
 
 
 class TaskDecisionTree(TaskRunTask):

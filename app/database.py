@@ -7,6 +7,7 @@ from typing import List, NamedTuple, Optional
 class Message(NamedTuple):
     id: int
     created_at: sqlite3.Timestamp
+    filename: str
     duration: int
     play_count: int
     last_played_at: Optional[sqlite3.Timestamp]
@@ -30,6 +31,7 @@ class TableMessages:
       CREATE TABLE %s (
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
         created_at      TIMESTAMP NOT NULl,
+        filename        TEXT NOT NULL,
         duration        INT NOT NULl,
         play_count      INT NOT NULl DEFAULT 0,
         last_played_at  TIMESTAMP
@@ -38,11 +40,11 @@ class TableMessages:
             % TableMessages.TABLE_NAME
         )
 
-    def insert(self, duration: int) -> int:
+    def insert(self, filename: str, duration: int) -> int:
         self.cursor.execute(
-            "INSERT INTO %s (created_at, duration) VALUES (?, ?)"
+            "INSERT INTO %s (created_at, filename, duration) VALUES (?, ?, ?)"
             % TableMessages.TABLE_NAME,
-            (datetime.datetime.now(), duration),
+            (datetime.datetime.now(), filename, duration),
         )
         self.connection.commit()
         return self.cursor.lastrowid
