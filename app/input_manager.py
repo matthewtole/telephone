@@ -24,6 +24,10 @@ class InputManager:
     def is_handset_up(self) -> bool:
         pass
 
+    @abstractmethod
+    def stop(self) -> None:
+        pass
+
 
 class CircuitBoard(InputManager):
     def __init__(self) -> None:
@@ -37,7 +41,7 @@ class CircuitBoard(InputManager):
 
 
 class DesktopInputManager(InputManager):
-    def create_button(self, button: Button, label: Optional[str] = None) -> tk.Button:
+    def create_button(self, button: Button, label: Optional[str] = None) -> ttk.Button:
         return ttk.Button(
             self.root,
             text=str(button.value) if label is None else label,
@@ -88,7 +92,7 @@ class DesktopInputManager(InputManager):
         return b
 
     def is_handset_up(self) -> bool:
-        return self.checkbox_var.val()
+        return self.checkbox_var.get()
 
     def stop(self):
         self.root.quit()

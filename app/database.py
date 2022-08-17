@@ -44,7 +44,7 @@ class TableMessages:
             % TableMessages.TABLE_NAME
         )
 
-    def insert(self, filename: str, duration: int) -> int:
+    def insert(self, filename: str, duration: int) -> Optional[int]:
         self.cursor.execute(
             "INSERT INTO %s (created_at, filename, duration) VALUES (?, ?, ?)"
             % TableMessages.TABLE_NAME,

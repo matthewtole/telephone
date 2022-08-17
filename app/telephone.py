@@ -4,7 +4,9 @@ from input_manager import InputManager
 
 
 class Telephone:
-    def __init__(self, input_manager: InputManager, task: Task, loop=True) -> None:
+    def __init__(
+        self, input_manager: InputManager, task: Task, loop: bool = True
+    ) -> None:
         self.input_manager = input_manager
         self.task = TaskLoop(task) if loop else task
 

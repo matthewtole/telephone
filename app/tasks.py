@@ -4,7 +4,7 @@ import uuid
 import logging
 from time import time
 from os.path import join
-from typing import Optional
+from typing import Optional, Type
 from config import MESSAGES_DIR, DATABASE_FILE
 from database import Database
 
@@ -54,7 +54,7 @@ class TaskRunTask(Task):
 
     def __init__(self) -> None:
         super().__init__()
-        self.task = None
+        self.task: Optional[Task] = None
 
     def tick(self) -> None:
         self.task.tick() if self.task is not None else None
@@ -109,7 +109,7 @@ class TaskAudio(Task):
     Base class for Tasks that play audio files.
     """
 
-    def __init__(self, audio_player=AudioPlayer()) -> None:
+    def __init__(self, audio_player: AudioPlayer = AudioPlayer()) -> None:
         super().__init__()
         self._audio_player = audio_player
         self._has_played = False
@@ -135,7 +135,9 @@ class TaskAudio(Task):
 
 
 class TaskAudioTrack(TaskAudio):
-    def __init__(self, track: AudioTrack, audio_player=AudioPlayer()) -> None:
+    def __init__(
+        self, track: AudioTrack, audio_player: AudioPlayer = AudioPlayer()
+    ) -> None:
         super().__init__(audio_player)
         self.track = track
 
@@ -243,7 +245,7 @@ class TaskSequence(TaskRunTask):
 class TaskCode(Task):
     def __init__(self) -> None:
         super().__init__()
-        self.code = []
+        self.code: list[int] = []
         self.code_completed = False
 
     def is_complete(self) -> bool:
@@ -274,7 +276,7 @@ class TaskLoop(TaskRunTask):
 
     def tick(self) -> None:
         super().tick()
-        if self.task.is_complete():
+        if self.task is not None and self.task.is_complete():
             self.reset()
             self.start()
 
@@ -291,7 +293,7 @@ class TaskAudioSequence(TaskSequence):
     Task for reading out a sequence of numbers using an AudioPlayer.
     """
 
-    def __init__(self, code: str, audio_player=AudioPlayer()) -> None:
+    def __init__(self, code: str, audio_player: AudioPlayer = AudioPlayer()) -> None:
         super().__init__(
             list(map(lambda c: TaskAudioTrack(DIGIT_TRACKS[c], audio_player), code))
         )
@@ -299,7 +301,10 @@ class TaskAudioSequence(TaskSequence):
 
 class TaskRecord(Task):
     def __init__(
-        self, filename: str, end_button=Button.STAR, audio_recorder=AudioRecorder()
+        self,
+        filename: str,
+        end_button: Button = Button.STAR,
+        audio_recorder: AudioRecorder = AudioRecorder(),
     ) -> None:
         super().__init__()
         self._audio_recorder = audio_recorder
@@ -332,7 +337,11 @@ class TaskRecord(Task):
 
 
 class TaskRecordMessage(TaskRunTask):
-    def __init__(self, audio_recorder=AudioRecorder(), DB=Database) -> None:
+    def __init__(
+        self,
+        audio_recorder: AudioRecorder = AudioRecorder(),
+        DB: Type[Database] = Database,
+    ) -> None:
         super().__init__()
         self._audio_recorder = audio_recorder
         self._DB = DB
@@ -352,7 +361,11 @@ class TaskRecordMessage(TaskRunTask):
 
     def tick(self):
         super().tick()
-        if self.task.is_complete() and not self._messaged_saved:
+        if (
+            self.task is not None
+            and self.task.is_complete()
+            and not self._messaged_saved
+        ):
             self._messaged_saved = True
             duration = time() - self._start_time
             self._DB(DATABASE_FILE).messages.insert(self._filename, int(duration))
@@ -366,7 +379,9 @@ class TaskRecordMessage(TaskRunTask):
 
 
 class TaskPlayback(TaskAudio):
-    def __init__(self, filename: str, audio_player=AudioPlayer()) -> None:
+    def __init__(
+        self, filename: str, audio_player: AudioPlayer = AudioPlayer()
+    ) -> None:
         super().__init__(audio_player)
         self._filename = filename
 
@@ -376,7 +391,7 @@ class TaskPlayback(TaskAudio):
 
 
 class TaskPlayMessage(TaskRunTask):
-    def __init__(self, audio_player=AudioPlayer()) -> None:
+    def __init__(self, audio_player: AudioPlayer = AudioPlayer()) -> None:
         super().__init__()
         self._audio_player = audio_player
 
@@ -413,9 +428,14 @@ class TaskDecisionTree(TaskRunTask):
 
     def tick(self) -> None:
         super().tick()
-        if not self.has_chosen and self.task.is_complete():
-            choice = self.task.choice
-            self.task = self._tree.get(self.task.choice)
+        if (
+            not self.has_chosen
+            and self.task is not None
+            and self.task.is_complete()
+            and self.task.__class__ == TaskChoice
+        ):
+            choice: int = self.task.choice  # type: ignore
+            self.task = self._tree.get(choice)
             if self.task is None:
                 self.log.warn("Invalid choice %d" % choice)
             else:
