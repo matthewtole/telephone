@@ -5,7 +5,7 @@ import logging
 from time import time
 from os.path import join
 from typing import Optional
-from config import MESSAGES_DIR, DATABSE_FILE
+from config import MESSAGES_DIR, DATABASE_FILE
 from database import Database
 
 from audio.player import AudioPlayer
@@ -332,9 +332,10 @@ class TaskRecord(Task):
 
 
 class TaskRecordMessage(TaskRunTask):
-    def __init__(self, audio_recorder=AudioRecorder()) -> None:
+    def __init__(self, audio_recorder=AudioRecorder(), DB=Database) -> None:
         super().__init__()
         self._audio_recorder = audio_recorder
+        self._DB = DB
         self.setup()
 
     def setup(self):
@@ -347,7 +348,7 @@ class TaskRecordMessage(TaskRunTask):
     def tick(self):
         super().tick()
         if self.task.is_complete():
-            Database(DATABSE_FILE).messages.insert(self._filename, 0)
+            self._DB(DATABASE_FILE).messages.insert(self._filename, 0)
             self._messaged_saved = True
 
     def is_complete(self) -> bool:
@@ -374,17 +375,22 @@ class TaskPlayMessage(TaskRunTask):
         self._audio_player = audio_player
 
     def start(self) -> None:
-        db = Database(DATABSE_FILE)
-        unplayed_messages = db.messages.list_unplayed()
-        if len(unplayed_messages) > 0:
-            message = random.choice(unplayed_messages)
-            self.task = TaskPlayback(
-                join(MESSAGES_DIR, message.filename), self._audio_player
-            )
-            db.messages.play(message.id)
-            super().start()
-        else:
+        db = Database(DATABASE_FILE)
+        if db.messages.count() <= 0:
             raise Exception("Could not find a message to play")
+
+        count = 0
+        while count < 100:
+            messages = db.messages.list_with_play_count(count)
+            if len(messages) > 0:
+                message = random.choice(messages)
+                self.task = TaskPlayback(
+                    join(MESSAGES_DIR, message.filename), self._audio_player
+                )
+                db.messages.play(message.id)
+                super().start()
+                break
+            count += 1
 
         db.connection.close()
 

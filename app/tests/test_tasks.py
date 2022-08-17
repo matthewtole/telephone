@@ -1,5 +1,9 @@
 import time
-from ..tasks import TaskDecisionTree
+
+from ..audio.recorder import AudioRecorder
+
+from ..database import Database
+from ..tasks import TaskDecisionTree, TaskRecordMessage
 
 from audio.player import AudioPlayer
 from tasks import (
@@ -30,6 +34,33 @@ class FakeAudioPlayer(AudioPlayer):
 
     def tick(self) -> None:
         pass
+
+
+class FakeAudioRecorder(AudioRecorder):
+    def __init__(self):
+        self.is_recording = False
+        self.filename = None
+
+    def start(self):
+        self.is_recording = True
+
+    def tick(self):
+        pass
+
+    def stop(self) -> None:
+        self.is_recording = False
+
+    def save(self, filename: str) -> None:
+        self.filename = filename
+
+    def reset(self) -> None:
+        self.is_recording = False
+
+
+class MockDatabase(Database):
+    def __init__(self, db):
+        super().__init__(":memory:")
+        super().create_tables()
 
 
 def test_task_wait():
@@ -176,4 +207,18 @@ def test_task_decision_tree():
     assert not task.is_complete()
     time.sleep(0.15)
     task.tick()
+    assert task.is_complete()
+
+
+def test_task_record_message():
+    audio_recorder = FakeAudioRecorder()
+    task = TaskRecordMessage(audio_recorder, DB=MockDatabase)
+    task.start()
+    assert audio_recorder.is_recording
+    task.tick()
+    assert not task.is_complete()
+    task.on_button(Button.STAR)
+    task.tick()
+    assert audio_recorder.is_recording is False
+    assert audio_recorder.filename is not None
     assert task.is_complete()

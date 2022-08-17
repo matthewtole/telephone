@@ -34,3 +34,14 @@ def test_unplayed_messages():
 
     assert len(db.messages.list_with_play_count(1)) == 2
     assert len(db.messages.list_with_play_count(2)) == 1
+
+
+def test_count():
+    db = Database(":memory:")
+    db.create_tables()
+
+    assert db.messages.count() == 0
+
+    db.messages.insert("test-1.wav", 100)
+    db.messages.insert("test-2.wav", 200)
+    assert db.messages.count() == 2

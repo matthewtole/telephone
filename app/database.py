@@ -71,6 +71,12 @@ class TableMessages:
         )
         self.connection.commit()
 
+    def count(self) -> int:
+        result = self.cursor.execute(
+            "SELECT COUNT(*) as count FROM %s" % TableMessages.TABLE_NAME
+        ).fetchone()
+        return result[0]
+
 
 class Database:
     def __init__(self, db: str):
