@@ -4,7 +4,7 @@ import datetime
 from typing import List, NamedTuple, Optional
 
 
-class Recording(NamedTuple):
+class Message(NamedTuple):
     id: int
     created_at: sqlite3.Timestamp
     duration: int
@@ -12,20 +12,22 @@ class Recording(NamedTuple):
     last_played_at: Optional[sqlite3.Timestamp]
 
 
-class TableRecording:
+class TableMessages:
+    TABLE_NAME = "messages"
+
     def __init__(self, connection: sqlite3.Connection, log: logging.Logger):
         self.connection = connection
         self.cursor = connection.cursor()
         self.log = log
 
     def drop(self):
-        self.cursor.execute("DROP TABLE recordings")
+        self.cursor.execute("DROP TABLE %s" % TableMessages.TABLE_NAME)
 
     def create(self):
-        self.log.info("Creating table 'recordings'")
+        self.log.info("Creating table '%s'" % TableMessages.TABLE_NAME)
         self.cursor.execute(
             """
-      CREATE TABLE recordings (
+      CREATE TABLE %s (
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
         created_at      TIMESTAMP NOT NULl,
         duration        INT NOT NULl,
@@ -33,34 +35,37 @@ class TableRecording:
         last_played_at  TIMESTAMP
       )
 """
+            % TableMessages.TABLE_NAME
         )
 
     def insert(self, duration: int) -> int:
         self.cursor.execute(
-            "INSERT INTO recordings (created_at, duration) VALUES (?, ?)",
+            "INSERT INTO %s (created_at, duration) VALUES (?, ?)"
+            % TableMessages.TABLE_NAME,
             (datetime.datetime.now(), duration),
         )
         self.connection.commit()
         return self.cursor.lastrowid
 
-    def get(self, id: int) -> Recording:
+    def get(self, id: int) -> Message:
         result = self.cursor.execute(
-            "SELECT * FROM recordings WHERE id=%d" % id
+            "SELECT * FROM %s WHERE id=%d" % (TableMessages.TABLE_NAME, id)
         ).fetchone()
-        return Recording(*result)
+        return Message(*result)
 
-    def list_with_play_count(self, count: int) -> List[Recording]:
+    def list_with_play_count(self, count: int) -> List[Message]:
         result = self.cursor.execute(
-            "SELECT * FROM recordings WHERE play_count=%d" % count
+            "SELECT * FROM %s WHERE play_count=%d" % (TableMessages.TABLE_NAME, count)
         ).fetchall()
-        return list(map(lambda r: Recording(*r), result))
+        return list(map(lambda r: Message(*r), result))
 
-    def list_unplayed(self) -> List[Recording]:
+    def list_unplayed(self) -> List[Message]:
         return self.list_with_play_count(0)
 
     def play(self, id: int) -> None:
         self.cursor.execute(
-            "UPDATE recordings SET play_count=play_count+1 WHERE id=%d" % id
+            "UPDATE %s SET play_count=play_count+1 WHERE id=%d"
+            % (TableMessages.TABLE_NAME, id)
         )
         self.connection.commit()
 
@@ -70,13 +75,13 @@ class Database:
         self.connection = sqlite3.connect(db)
         self.cursor = self.connection.cursor()
         self.log = logging.getLogger("Database")
-        self.recording = TableRecording(self.connection, self.log)
+        self.messages = TableMessages(self.connection, self.log)
 
     def create_tables(self):
         self.log.info("Dropping all existing tables")
         try:
-            self.recording.drop()
+            self.messages.drop()
         except sqlite3.OperationalError:
             pass
 
-        self.recording.create()
+        self.messages.create()

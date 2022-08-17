@@ -1,35 +1,35 @@
 from ..database import Database
 
 
-def test_add_recording():
+def test_add_message():
     db = Database(":memory:")
     db.create_tables()
-    db.recording.insert(100)
-    recording = db.recording.get(1)
-    assert recording.id == 1
-    assert recording.duration == 100
-    assert recording.last_played_at == None  # noqa: E711
-    assert recording.play_count == 0
+    db.messages.insert(100)
+    message = db.messages.get(1)
+    assert message.id == 1
+    assert message.duration == 100
+    assert message.last_played_at == None  # noqa: E711
+    assert message.play_count == 0
 
 
-def test_unplayed_recordings():
+def test_unplayed_messages():
     db = Database(":memory:")
     db.create_tables()
-    db.recording.insert(100)
-    db.recording.insert(200)
-    db.recording.insert(300)
+    db.messages.insert(100)
+    db.messages.insert(200)
+    db.messages.insert(300)
 
-    assert len(db.recording.list_unplayed()) == 3
+    assert len(db.messages.list_unplayed()) == 3
 
-    db.recording.play(1)
-    db.recording.play(3)
+    db.messages.play(1)
+    db.messages.play(3)
 
-    assert len(db.recording.list_unplayed()) == 1
+    assert len(db.messages.list_unplayed()) == 1
 
-    db.recording.play(1)
-    db.recording.play(2)
+    db.messages.play(1)
+    db.messages.play(2)
 
-    assert len(db.recording.list_unplayed()) == 0
+    assert len(db.messages.list_unplayed()) == 0
 
-    assert len(db.recording.list_with_play_count(1)) == 2
-    assert len(db.recording.list_with_play_count(2)) == 1
+    assert len(db.messages.list_with_play_count(1)) == 2
+    assert len(db.messages.list_with_play_count(2)) == 1
