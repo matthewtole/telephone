@@ -57,7 +57,7 @@ class TableMessages:
 
     def list_with_play_count(self, count: int) -> List[Message]:
         result = self.cursor.execute(
-            "SELECT * FROM %s WHERE play_count=?" % (TableMessages.TABLE_NAME), count
+            "SELECT * FROM %s WHERE play_count=%d" % (TableMessages.TABLE_NAME, count)
         ).fetchall()
         return list(map(lambda r: Message(*r), result))
 
