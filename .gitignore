@@ -1,8 +1,16 @@
-*.db
+# Python files
 __pycache__/
-temp/
-telephone.log
 .pytest_cache/
-node_modules/
+
+# Test coverage
 .coverage
 htmlcov/
+
+# Node files
+node_modules/
+
+# App specific files
+*.db
+temp/
+messages/
+telephone.log

@@ -5,8 +5,9 @@ from audio_track import AudioTrack
 from input_manager import DesktopInputManager
 from telephone import Telephone
 import tasks
+import shutil
 
-from config import DATABSE_FILE, LOG_FILE, TEMP_DIR
+from config import DATABSE_FILE, LOG_FILE, TEMP_DIR, MESSAGES_DIR
 
 from database import Database
 
@@ -20,7 +21,13 @@ def setup():
     )
 
     try:
+        shutil.rmtree(TEMP_DIR, ignore_errors=True)
         os.mkdir(TEMP_DIR)
+    except FileExistsError:
+        pass
+
+    try:
+        os.mkdir(MESSAGES_DIR)
     except FileExistsError:
         pass
 

@@ -1,10 +1,11 @@
 from os import path
+import random
 import uuid
 import logging
 from time import time
 from os.path import join
 from typing import Optional
-from config import TEMP_DIR, DATABSE_FILE
+from config import MESSAGES_DIR, DATABSE_FILE
 from database import Database
 
 from audio.player import AudioPlayer
@@ -334,9 +335,12 @@ class TaskRecordMessage(TaskRunTask):
     def __init__(self, audio_recorder=AudioRecorder()) -> None:
         super().__init__()
         self._audio_recorder = audio_recorder
+        self.setup()
+
+    def setup(self):
         self._filename = "%s.wav" % uuid.uuid4().hex
         self.task = TaskRecord(
-            path.join(TEMP_DIR, self._filename), audio_recorder=audio_recorder
+            path.join(MESSAGES_DIR, self._filename), audio_recorder=self._audio_recorder
         )
         self._messaged_saved = False
 
@@ -350,11 +354,7 @@ class TaskRecordMessage(TaskRunTask):
         return super().is_complete() and self._messaged_saved
 
     def reset(self) -> None:
-        self._filename = "%s.wav" % uuid.uuid4().hex
-        self.task = TaskRecord(
-            path.join(TEMP_DIR, self._filename), audio_recorder=self._audio_recorder
-        )
-        self._messaged_saved = False
+        self.setup()
         return super().reset()
 
 
@@ -374,10 +374,19 @@ class TaskPlayMessage(TaskRunTask):
         self._audio_player = audio_player
 
     def start(self) -> None:
-        unplayed_messages = Database(DATABSE_FILE).messages.list_unplayed()
-        message = unplayed_messages[-1]
-        self.task = TaskPlayback(join(TEMP_DIR, message.filename), self._audio_player)
-        super().start()
+        db = Database(DATABSE_FILE)
+        unplayed_messages = db.messages.list_unplayed()
+        if len(unplayed_messages) > 0:
+            message = random.choice(unplayed_messages)
+            self.task = TaskPlayback(
+                join(MESSAGES_DIR, message.filename), self._audio_player
+            )
+            db.messages.play(message.id)
+            super().start()
+        else:
+            raise Exception("Could not find a message to play")
+
+        db.connection.close()
 
 
 class TaskDecisionTree(TaskRunTask):
