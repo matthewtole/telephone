@@ -1,7 +1,6 @@
 import { useQuery } from 'react-query';
 import { DateTime } from 'luxon';
-
-const API_URL = `http://192.168.1.11:3000/api`;
+import { API_ROOT } from '../config';
 
 export function formatDate(date) {
   return DateTime.fromSQL(date).toFormat('M/dd t');
@@ -36,7 +35,7 @@ function SkeletonTable({ numRows, numColumns }) {
 
 export function MeessageList() {
   const { isLoading, error, data } = useQuery('messages', () =>
-    fetch(`${API_URL}/messages`).then((res) => res.json())
+    fetch(`${API_ROOT}/messages`).then((res) => res.json())
   );
   return (
     <table>

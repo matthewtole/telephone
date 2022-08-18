@@ -32,6 +32,16 @@ app.get('/api/messages', async (req, res) => {
   res.send(await db.all('SELECT * FROM messages ORDER BY created_at DESC'));
 });
 
+app.get('/api/message/:id', async (req, res) => {
+  const db = await open({
+    filename: '../telephone.db',
+    driver: sqlite3.Database,
+  });
+  res.send(
+    await db.get(`SELECT * FROM messages WHERE id=${Number(req.params.id)}`)
+  );
+});
+
 app.get('/api/stats', async (req, res) => {
   const db = await open({
     filename: '../telephone.db',
