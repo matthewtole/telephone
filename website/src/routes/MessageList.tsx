@@ -1,8 +1,10 @@
+import React from 'react';
 import { useQuery } from 'react-query';
 import { DateTime } from 'luxon';
 import { API_ROOT } from '../config';
 import { SkeletonTable } from '../components/SkeletonTable';
 import { Link } from 'react-router-dom';
+import { Message } from '../types';
 
 export function formatDate(date) {
   return DateTime.fromSQL(date).toFormat('M/dd t');
@@ -17,8 +19,8 @@ export function formatDuration(duration) {
   ].join(':');
 }
 
-export function MeessageList() {
-  const { isLoading, error, data } = useQuery('messages', () =>
+export function MessageList() {
+  const { isLoading, error, data } = useQuery<Array<Message>>('messages', () =>
     fetch(`${API_ROOT}/messages`).then((res) => res.json())
   );
   return (

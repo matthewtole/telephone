@@ -1,13 +1,19 @@
+import React from 'react';
 import { useQuery } from 'react-query';
 import { Link, useParams } from 'react-router-dom';
 import { API_ROOT, MESSAGES_ROOT } from '../config';
 import { formatDate } from './MessageList';
 import ReactAudioPlayer from 'react-audio-player';
+import { Message } from '../types';
 
 export function MessageDetails() {
   const { id } = useParams();
 
-  const { data } = useQuery(`messages/${id}`, () =>
+  const { data } = useQuery<{
+    message: Message;
+    previous?: Message;
+    next?: Message;
+  }>(`messages/${id}`, () =>
     fetch(`${API_ROOT}/message/${id}`).then((res) => res.json())
   );
 

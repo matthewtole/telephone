@@ -1,11 +1,15 @@
+import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom';
-import { MeessageList } from './routes/MessageList';
+import { MessageList } from './routes/MessageList';
 import { MessageDetails } from './routes/MessageDetails';
 import { Home } from './routes/Home';
-import { Messages } from './routes/Messages';
 
 const queryClient = new QueryClient();
+
+function Messages() {
+  return <Outlet />;
+}
 
 function Container() {
   return (
@@ -34,7 +38,7 @@ export function App() {
           <Route index element={<Home />} />
           <Route path="messages" element={<Messages />}>
             <Route path=":id" element={<MessageDetails />}></Route>
-            <Route index element={<MeessageList />}></Route>
+            <Route index element={<MessageList />}></Route>
           </Route>
         </Route>
       </Routes>

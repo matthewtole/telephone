@@ -1,24 +1,27 @@
+import React from 'react';
 import { DateTime, Duration } from 'luxon';
 import { useQuery } from 'react-query';
 import { API_ROOT } from '../config';
 import { formatDate } from './MessageList';
+import { Systeminformation } from 'systeminformation';
+import { Message } from '../types';
 
-export function Home() {
-  const statsQuery = useQuery(
-    'stats',
-    () => fetch(`${API_ROOT}/stats`).then((res) => res.json()),
-    {
-      refetchInterval: 1000,
-    }
-  );
+export const Home: React.FC = () => {
+  const statsQuery = useQuery<{
+    messageCount: number;
+    lastMessage: Message;
+    totalListens: number;
+  }>('stats', () => fetch(`${API_ROOT}/stats`).then((res) => res.json()), {
+    refetchInterval: 1000,
+  });
 
-  const systemQuery = useQuery(
-    'system',
-    () => fetch(`${API_ROOT}/system`).then((res) => res.json()),
-    {
-      refetchInterval: 1000,
-    }
-  );
+  const systemQuery = useQuery<{
+    time: Systeminformation.TimeData;
+    disks: Systeminformation.FsSizeData[];
+    memory: Systeminformation.MemData[];
+  }>('system', () => fetch(`${API_ROOT}/system`).then((res) => res.json()), {
+    refetchInterval: 1000,
+  });
 
   const largestDisk =
     systemQuery.data == null
@@ -69,15 +72,15 @@ export function Home() {
               </span>
               <span className="label">Uptime</span>
             </div>
-            <div className="info-block">
-              <span className="value">{largestDisk.use}%</span>
-              <span className="label">Disk Usage</span>
-            </div>
+            {largestDisk != null && (
+              <div className="info-block">
+                <span className="value">{largestDisk.use}%</span>
+                <span className="label">Disk Usage</span>
+              </div>
+            )}
           </>
         )}
       </div>
     </>
   );
-
-  return;
-}
+};

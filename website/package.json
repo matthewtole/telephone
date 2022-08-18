@@ -28,6 +28,9 @@
   "devDependencies": {
     "@parcel/transformer-sass": "^2.7.0",
     "@types/luxon": "^3.0.0",
+    "@types/node": "^18.7.6",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
     "concurrently": "^7.3.0",
     "nodemon": "^2.0.19",
     "parcel": "^2.7.0",
