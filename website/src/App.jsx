@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom';
 import { MeessageList } from './routes/MessageList';
 import { MessageDetails } from './routes/MessageDetails';
 import { Home } from './routes/Home';
+import { Messages } from './routes/Messages';
 
 const queryClient = new QueryClient();
 
@@ -31,8 +32,10 @@ export function App() {
       <Routes>
         <Route path="/" element={<Container />}>
           <Route index element={<Home />} />
-          <Route path="messages" element={<MeessageList />}></Route>
-          <Route path="message/:id" element={<MessageDetails />}></Route>
+          <Route path="messages" element={<Messages />}>
+            <Route path=":id" element={<MessageDetails />}></Route>
+            <Route index element={<MeessageList />}></Route>
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,36 +1,20 @@
 import { useQuery } from 'react-query';
 import { DateTime } from 'luxon';
 import { API_ROOT } from '../config';
+import { SkeletonTable } from '../components/SkeletonTable';
+import { Link } from 'react-router-dom';
 
 export function formatDate(date) {
   return DateTime.fromSQL(date).toFormat('M/dd t');
 }
 
-function formatDuration(duration) {
+export function formatDuration(duration) {
   const minutes = Math.floor(duration / 60);
   const seconds = duration % 60;
   return [
     minutes.toString().padStart(2, '0'),
     seconds.toString().padStart(2, '0'),
   ].join(':');
-}
-
-function SkeletonRow({ numCells }) {
-  return (
-    <tr>
-      {new Array(numCells).fill(null).map((_, index) => (
-        <td key={index}>
-          <span className="skeleton">&nbsp;</span>
-        </td>
-      ))}
-    </tr>
-  );
-}
-
-function SkeletonTable({ numRows, numColumns }) {
-  return new Array(numRows)
-    .fill(null)
-    .map((_, index) => <SkeletonRow key={index} numCells={numColumns} />);
 }
 
 export function MeessageList() {
@@ -53,7 +37,11 @@ export function MeessageList() {
         {data != null &&
           data.map((message) => (
             <tr key={message.id}>
-              <td>{message.id}</td>
+              <td>
+                <Link to={`${message.id}`} className="block-link">
+                  {message.id}
+                </Link>
+              </td>
               <td>{formatDate(message.created_at)}</td>
               <td>{formatDuration(message.duration)}</td>
               <td style={{ textAlign: 'right' }}>{message.play_count}</td>

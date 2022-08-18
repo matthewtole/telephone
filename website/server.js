@@ -4,6 +4,7 @@ const fs = require('fs');
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const cors = require('cors');
+const si = require('systeminformation');
 
 const port = 3000;
 
@@ -24,6 +25,14 @@ app.get('/api/log', (req, res) => {
   );
 });
 
+app.get('/api/system', async (req, res) => {
+  res.send({
+    time: si.time(),
+    disks: await si.fsSize(),
+    memory: await si.mem(),
+  });
+});
+
 app.get('/api/messages', async (req, res) => {
   const db = await open({
     filename: '../telephone.db',
@@ -37,9 +46,22 @@ app.get('/api/message/:id', async (req, res) => {
     filename: '../telephone.db',
     driver: sqlite3.Database,
   });
-  res.send(
-    await db.get(`SELECT * FROM messages WHERE id=${Number(req.params.id)}`)
+  const message = await db.get(
+    `SELECT * FROM messages WHERE id=${Number(req.params.id)}`
   );
+  const previous = await db.get(
+    `SELECT * FROM messages WHERE created_at < ? ORDER BY created_at DESC`,
+    [message.created_at]
+  );
+  const next = await db.get(
+    `SELECT * FROM messages WHERE created_at > ? ORDER BY created_at ASC`,
+    [message.created_at]
+  );
+  res.send({
+    message,
+    previous,
+    next,
+  });
 });
 
 app.get('/api/stats', async (req, res) => {
