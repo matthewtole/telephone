@@ -53,6 +53,10 @@ app.get('/api/message/:id', async (req, res) => {
   const message = await db.get(
     `SELECT * FROM messages WHERE id=${Number(req.params.id)}`
   );
+  if (message == null) {
+    res.status(404).send();
+    return;
+  }
   const previous = await db.get(
     `SELECT * FROM messages WHERE created_at < ? ORDER BY created_at DESC`,
     [message.created_at]
