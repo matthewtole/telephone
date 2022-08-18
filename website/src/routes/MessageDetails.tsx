@@ -5,6 +5,7 @@ import { API_ROOT, MESSAGES_ROOT } from '../config';
 import { formatDate } from './MessageList';
 import ReactAudioPlayer from 'react-audio-player';
 import { Message } from '../types';
+import AudioPlayer from 'react-h5-audio-player';
 
 export function MessageDetails() {
   const { id } = useParams();
@@ -23,11 +24,15 @@ export function MessageDetails() {
 
   return (
     <>
-      <header>
-        {data.previous != null && <Link to={`../${data.previous.id}`}>⟵</Link>}
-        {data.next != null && <Link to={`../${data.next.id}`}>⟶</Link>}
+      <header className="message__header">
+        {data.previous == null ? (
+          <span></span>
+        ) : (
+          <Link to={`../${data.previous.id}`}>⟵ Previous</Link>
+        )}
+        {data.next != null && <Link to={`../${data.next.id}`}>Next ⟶</Link>}
       </header>
-      <section>
+      <section style={{ maxWidth: '50em', margin: '0 auto' }}>
         <h2>Recording #{data.message.id}</h2>
         <p>Recorded at {formatDate(data.message.created_at)}</p>
         <p>Played {data.message.play_count} times</p>
@@ -35,10 +40,14 @@ export function MessageDetails() {
           <p>Last played at {data.message.last_played_at}</p>
         )}
       </section>
-      <section>
-        <ReactAudioPlayer
+      <section style={{ maxWidth: '50em', margin: '0 auto' }}>
+        <AudioPlayer
           src={`${MESSAGES_ROOT}/${data.message.filename}`}
-          controls
+          layout="horizontal"
+          customAdditionalControls={[]}
+          customVolumeControls={[]}
+          showJumpControls={false}
+          showSkipControls={false}
         />
       </section>
     </>

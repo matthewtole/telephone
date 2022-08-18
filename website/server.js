@@ -5,6 +5,7 @@ const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const cors = require('cors');
 const si = require('systeminformation');
+const { dir } = require('console');
 
 const port = 3000;
 
@@ -34,11 +35,16 @@ app.get('/api/system', async (req, res) => {
 });
 
 app.get('/api/messages', async (req, res) => {
+  const sort = req.query.sort ?? 'created_at';
+  const direction = req.query.direction ?? 'desc';
+
   const db = await open({
     filename: '../telephone.db',
     driver: sqlite3.Database,
   });
-  res.send(await db.all('SELECT * FROM messages ORDER BY created_at DESC'));
+  res.send(
+    await db.all(`SELECT * FROM messages ORDER BY ${sort} ${direction}`)
+  );
 });
 
 app.get('/api/message/:id', async (req, res) => {

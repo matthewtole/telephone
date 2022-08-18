@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import { DateTime } from 'luxon';
 import { API_ROOT } from '../config';
 import { SkeletonTable } from '../components/SkeletonTable';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Message } from '../types';
 
 export function formatDate(date) {
@@ -20,18 +20,35 @@ export function formatDuration(duration) {
 }
 
 export function MessageList() {
-  const { isLoading, error, data } = useQuery<Array<Message>>('messages', () =>
-    fetch(`${API_ROOT}/messages`).then((res) => res.json())
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sort = searchParams.get('sort') ?? 'created_at';
+  const direction = searchParams.get('direction') ?? 'desc';
+
+  const { isLoading, error, data } = useQuery<Array<Message>>(
+    ['messages', sort, direction],
+    () =>
+      fetch(`${API_ROOT}/messages?sort=${sort}&direction=${direction}`).then(
+        (res) => res.json()
+      )
   );
+
   return (
     <table>
       <thead>
         <tr>
           <th>ID</th>
-          <th>Created</th>
-          <th>Length</th>
-          <th># Plays</th>
-          <th>Last Play</th>
+          <th>
+            <Link to="?sort=created_at">Created</Link>
+          </th>
+          <th>
+            <Link to="?sort=duration">Length</Link>
+          </th>
+          <th>
+            <Link to="?sort=play_count"># Plays</Link>
+          </th>
+          <th>
+            <Link to="?sort=last_played_at">Last Play</Link>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -39,14 +56,23 @@ export function MessageList() {
         {data != null &&
           data.map((message) => (
             <tr key={message.id}>
-              <td>
+              <td style={{ fontVariantNumeric: 'tabular-nums' }}>
                 <Link to={`${message.id}`} className="block-link">
-                  {message.id}
+                  {message.id.toString().padStart(4, '0')}
                 </Link>
               </td>
               <td>{formatDate(message.created_at)}</td>
-              <td>{formatDuration(message.duration)}</td>
-              <td style={{ textAlign: 'right' }}>{message.play_count}</td>
+              <td style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {formatDuration(message.duration)}
+              </td>
+              <td
+                style={{
+                  fontVariantNumeric: 'tabular-nums',
+                  textAlign: 'right',
+                }}
+              >
+                {message.play_count}
+              </td>
               <td>
                 {message.last_played_at != null &&
                   formatDate(message.last_played_at)}

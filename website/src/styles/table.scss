@@ -9,8 +9,23 @@ th {
 
 th,
 td {
-  border: 1px solid #ddd;
+  border: 1px solid #ffcb42;
   padding: 0.25em 0.5em;
+}
+
+th {
+  background-color: #ffcb42;
+  border-top-color: #ffcb42;
+  border-left-color: #fff;
+  border-right-color: #fff;
+
+  &:first-child {
+    border-left-color: #ffcb42;
+  }
+
+  &:last-child {
+    border-right-color: #ffcb42;
+  }
 }
 
 td a.block-link {

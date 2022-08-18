@@ -1,5 +1,6 @@
 @import 'reset.scss';
 @import 'table.scss';
+@import 'react-h5-audio-player/src/styles.scss';
 
 @font-face {
   font-family: 'Manrope';
@@ -53,9 +54,13 @@ body {
 }
 
 main {
-  padding: 1em;
+  padding: 0.5em;
 }
-
+@media screen and (min-width: 1024px) {
+  main {
+    padding: 1em;
+  }
+}
 .skeleton {
   display: block;
   position: relative;
@@ -85,11 +90,15 @@ main {
 .info-block {
   display: flex;
   flex-direction: column;
-  border: 2px solid #ffb200;
-  background-color: transparentize(#ffb200, 0.5);
+  border: 4px solid #ffcb42;
+  background-color: #fff4cf;
   border-radius: 8px;
   padding: 1em;
   align-items: center;
+
+  &[href]:hover {
+    background-color: #ffcb42;
+  }
 
   .value {
     font-size: var(--font-size-xxl);
@@ -98,6 +107,7 @@ main {
   .label {
     font-size: var(--font-size-sm);
     text-transform: uppercase;
+    letter-spacing: 1px;
     font-weight: 700;
     opacity: 0.5;
   }
@@ -106,4 +116,19 @@ main {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+.message__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffcb42;
+
+  a {
+    padding: 0.5em;
+
+    &:hover {
+      background: #fff4cf;
+    }
+  }
 }
