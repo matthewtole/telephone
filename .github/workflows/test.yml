@@ -29,13 +29,15 @@ jobs:
       - run: npm run build --if-present
       - run: npm run db:seed
       - run: npm test
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: website
+          parallel: true
 
   app:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: website
 
     steps:
       - uses: actions/checkout@v3
@@ -63,7 +65,19 @@ jobs:
       - name: Test with pytest
         run: |
           coverage run --source=app -m pytest app
-      - name: Upload coverage data to coveralls.io
-        run: coveralls --service=github
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          flag-name: app
+          parallel: true
+
+  coveralls:
+    needs: [website, app]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
