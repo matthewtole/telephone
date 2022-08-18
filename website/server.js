@@ -5,9 +5,13 @@ const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const cors = require('cors');
 const si = require('systeminformation');
-const { dir } = require('console');
 
-const port = 3000;
+async function Db() {
+  return await open({
+    filename: '../telephone.db',
+    driver: sqlite3.Database,
+  });
+}
 
 app.use(cors());
 
@@ -38,20 +42,14 @@ app.get('/api/messages', async (req, res) => {
   const sort = req.query.sort ?? 'created_at';
   const direction = req.query.direction ?? 'desc';
 
-  const db = await open({
-    filename: '../telephone.db',
-    driver: sqlite3.Database,
-  });
+  const db = await Db();
   res.send(
     await db.all(`SELECT * FROM messages ORDER BY ${sort} ${direction}`)
   );
 });
 
 app.get('/api/message/:id', async (req, res) => {
-  const db = await open({
-    filename: '../telephone.db',
-    driver: sqlite3.Database,
-  });
+  const db = await Db();
   const message = await db.get(
     `SELECT * FROM messages WHERE id=${Number(req.params.id)}`
   );
@@ -71,10 +69,7 @@ app.get('/api/message/:id', async (req, res) => {
 });
 
 app.get('/api/stats', async (req, res) => {
-  const db = await open({
-    filename: '../telephone.db',
-    driver: sqlite3.Database,
-  });
+  const db = await Db();
   const messageCount = await db.get('SELECT COUNT(*) as count FROM messages');
   const totalListens = await db.get(
     'SELECT SUM(play_count) as sum FROM messages'
@@ -92,6 +87,4 @@ app.get('/api/stats', async (req, res) => {
 app.use(express.static('public'));
 app.use('/messages', express.static('../messages'));
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+module.exports = app;
