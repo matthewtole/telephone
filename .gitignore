@@ -9,8 +9,12 @@ htmlcov/
 # Node files
 node_modules/
 
-# App specific files
+# App files
 *.db
 temp/
 messages/
 telephone.log
+
+# Website files
+.parcel-cache/
+dist/

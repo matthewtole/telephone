@@ -33,10 +33,10 @@ def setup():
 
 
 if __name__ == "__main__":
-    setup()
-    db = Database(DATABASE_FILE)
-    db.create_tables()
-    db.connection.close()
+    # setup()
+    # db = Database(DATABASE_FILE)
+    # db.create_tables()
+    # db.connection.close()
 
     root_task = tasks.TaskSequence(
         [
