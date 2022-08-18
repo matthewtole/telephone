@@ -9,7 +9,7 @@
     "web:dev": "parcel src/index.html",
     "dev": "concurrently \"npm:server:dev\" \"npm:web:dev\"",
     "test": "jest --collectCoverage",
-    "seed:db": "node seed-db.js"
+    "db:seed": "node seed-db.js"
   },
   "author": "Matthew Tole <matthewtole@gmail.com>",
   "license": "MIT",
