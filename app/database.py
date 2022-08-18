@@ -30,19 +30,8 @@ class TableMessages:
 
     def create(self):
         self.log.info("Creating table '%s'" % TableMessages.TABLE_NAME)
-        self.cursor.execute(
-            """
-      CREATE TABLE %s (
-        id              INTEGER PRIMARY KEY AUTOINCREMENT,
-        created_at      TIMESTAMP NOT NULl,
-        filename        TEXT NOT NULL,
-        duration        INT NOT NULl,
-        play_count      INT NOT NULl DEFAULT 0,
-        last_played_at  TIMESTAMP
-      )
-"""
-            % TableMessages.TABLE_NAME
-        )
+        sql = "".join(open("sql/messages.sql", "r").readlines())
+        self.cursor.execute(sql)
 
     def insert(self, filename: str, duration: int) -> Optional[int]:
         self.cursor.execute(

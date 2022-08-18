@@ -6,10 +6,9 @@ from input_manager import DesktopInputManager
 from telephone import Telephone
 import tasks
 import shutil
+from database import Database
 
 from config import DATABASE_FILE, LOG_FILE, TEMP_DIR, MESSAGES_DIR
-
-from database import Database
 
 
 def setup():
@@ -33,10 +32,11 @@ def setup():
 
 
 if __name__ == "__main__":
-    # setup()
-    # db = Database(DATABASE_FILE)
-    # db.create_tables()
-    # db.connection.close()
+    setup()
+    db: Database = Database(DATABASE_FILE)
+    db.create_tables()
+    db.connection.close()
+    # return
 
     root_task = tasks.TaskSequence(
         [

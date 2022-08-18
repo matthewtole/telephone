@@ -9,7 +9,7 @@ import { Message } from '../types';
 export const Home: React.FC = () => {
   const statsQuery = useQuery<{
     messageCount: number;
-    lastMessage: Message;
+    lastMessage?: Message;
     totalListens: number;
   }>('stats', () => fetch(`${API_ROOT}/stats`).then((res) => res.json()), {
     refetchInterval: 1000,
@@ -39,15 +39,17 @@ export const Home: React.FC = () => {
               <span className="value">{statsQuery.data.messageCount}</span>
               <span className="label">Total Messages</span>
             </a>
-            <a
-              className="info-block"
-              href={`/messages/${statsQuery.data.lastMessage.id}`}
-            >
-              <span className="value">
-                {formatDate(statsQuery.data.lastMessage.created_at)}
-              </span>
-              <span className="label">Last Message Recorded</span>
-            </a>
+            {statsQuery.data.lastMessage != null && (
+              <a
+                className="info-block"
+                href={`/messages/${statsQuery.data.lastMessage.id}`}
+              >
+                <span className="value">
+                  {formatDate(statsQuery.data.lastMessage.created_at)}
+                </span>
+                <span className="label">Last Message Recorded</span>
+              </a>
+            )}
             <div className="info-block">
               <span className="value">{statsQuery.data.totalListens}</span>
               <span className="label">Total Listens</span>

@@ -78,9 +78,9 @@ app.get('/api/stats', async (req, res) => {
     'SELECT * FROM messages ORDER BY created_at DESC'
   );
   res.send({
-    messageCount: messageCount.count,
+    messageCount: messageCount.count ?? 0,
     lastMessage,
-    totalListens: totalListens.sum,
+    totalListens: totalListens.sum ?? 0,
   });
 });
 

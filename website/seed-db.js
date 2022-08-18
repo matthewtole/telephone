@@ -1,18 +1,12 @@
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const { DateTime } = require('luxon');
+const fs = require('fs/promises');
 
 async function createMessagesTable(db) {
   db.exec('DROP TABLE messages');
-  db.exec(`CREATE TABLE messages (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    created_at      TIMESTAMP NOT NULl,
-    filename        TEXT NOT NULL,
-    duration        INT NOT NULl,
-    play_count      INT NOT NULl DEFAULT 0,
-    last_played_at  TIMESTAMP
-  )
-  `);
+  const sql = (await fs.readFile('../sql/messages.sql')).toString();
+  db.exec(sql);
 }
 
 async function seedMessages(db) {
