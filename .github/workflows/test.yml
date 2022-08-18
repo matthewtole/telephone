@@ -38,6 +38,7 @@ jobs:
           path-to-lcov: website/coverage/lcov.info
 
   app:
+    needs: website
     runs-on: ubuntu-latest
 
     steps:
