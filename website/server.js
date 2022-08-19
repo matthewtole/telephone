@@ -73,19 +73,31 @@ app.get('/api/message/:id', async (req, res) => {
   });
 });
 
+app.get('/api/plays/:id', async (req, res) => {
+  const db = await Db();
+  const plays = await db.all(
+    `SELECT * FROM plays WHERE message_id=${Number(
+      req.params.id
+    )} ORDER BY played_at DESC`
+  );
+  res.send({
+    plays,
+  });
+});
+
 app.get('/api/stats', async (req, res) => {
   const db = await Db();
   const messageCount = await db.get('SELECT COUNT(*) as count FROM messages');
-  const totalListens = await db.get(
-    'SELECT SUM(play_count) as sum FROM messages'
-  );
+  const totalListens = await db.get('SELECT COUNT(*) as count FROM plays');
   const lastMessage = await db.get(
     'SELECT * FROM messages ORDER BY created_at DESC'
   );
+  const lastPlay = await db.get('SELECT * FROM plays ORDER BY played_at DESC');
   res.send({
     messageCount: messageCount.count ?? 0,
     lastMessage,
-    totalListens: totalListens.sum ?? 0,
+    lastPlay,
+    totalListens: totalListens.count ?? 0,
   });
 });
 

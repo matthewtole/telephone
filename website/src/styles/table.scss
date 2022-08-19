@@ -3,10 +3,6 @@ table {
   border-collapse: collapse;
 }
 
-th {
-  text-align: left;
-}
-
 th,
 td {
   border: 1px solid #ffcb42;
@@ -14,6 +10,7 @@ td {
 }
 
 th {
+  text-align: left;
   background-color: #ffcb42;
   border-top-color: #ffcb42;
   border-left-color: #fff;
@@ -30,4 +27,18 @@ th {
 
 td a.block-link {
   display: block;
+}
+
+.skeleton {
+  display: block;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 2px;
+  background-color: #1e2226 !important;
+  opacity: 0.1;
+  color: transparent !important;
+  border-color: #1e2226 !important;
+  user-select: none;
+  cursor: default;
 }

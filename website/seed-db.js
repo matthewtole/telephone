@@ -5,8 +5,12 @@ const fs = require('fs/promises');
 
 async function createMessagesTable(db) {
   db.exec('DROP TABLE messages');
-  const sql = (await fs.readFile('../sql/messages.sql')).toString();
-  db.exec(sql);
+  db.exec((await fs.readFile('../sql/messages.sql')).toString());
+}
+
+async function createPlaysTable(db) {
+  db.exec('DROP TABLE plays');
+  db.exec((await fs.readFile('../sql/plays.sql')).toString());
 }
 
 async function seedMessages(db) {
@@ -27,6 +31,7 @@ async function seed() {
     driver: sqlite3.Database,
   });
   await createMessagesTable(db);
+  await createPlaysTable(db);
   await seedMessages(db);
 }
 

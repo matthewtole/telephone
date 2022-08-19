@@ -6,3 +6,10 @@ export interface Message {
   filename: string;
   duration: number;
 }
+
+export interface Play {
+  id: number;
+  message_id: number;
+  played_at: string;
+  duration?: number;
+}

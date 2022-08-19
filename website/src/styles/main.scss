@@ -73,23 +73,11 @@ img {
 main {
   padding: 0.5em;
 }
+
 @media screen and (min-width: 1024px) {
   main {
     padding: 1em;
   }
-}
-.skeleton {
-  display: block;
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 2px;
-  background-color: #1e2226 !important;
-  opacity: 0.1;
-  color: transparent !important;
-  border-color: #1e2226 !important;
-  user-select: none;
-  cursor: default;
 }
 
 .stats {
@@ -100,7 +88,7 @@ main {
 
 @media screen and (min-width: 1024px) {
   .stats {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 

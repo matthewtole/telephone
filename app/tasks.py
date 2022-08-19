@@ -409,6 +409,7 @@ class TaskPlayMessage(TaskRunTask):
                     join(MESSAGES_DIR, message.filename), self._audio_player
                 )
                 db.messages.play(message.id)
+                db.plays.insert(message.id)
                 super().start()
                 break
             count += 1

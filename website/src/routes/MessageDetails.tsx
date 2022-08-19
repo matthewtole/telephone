@@ -3,8 +3,33 @@ import { useQuery } from 'react-query';
 import { Link, useParams } from 'react-router-dom';
 import { API_ROOT, MESSAGES_ROOT } from '../config';
 import { formatDate } from './MessageList';
-import { Message } from '../types';
+import { Message, Play } from '../types';
 import AudioPlayer from 'react-h5-audio-player';
+
+const MessagePlays: React.FC = () => {
+  const { id } = useParams();
+
+  const { data } = useQuery<{
+    plays: Array<Play>;
+  }>(`plays/${id}`, () =>
+    fetch(`${API_ROOT}/plays/${id}`).then((res) => res.json())
+  );
+
+  if (data == null) {
+    return <></>;
+  }
+
+  return (
+    <table>
+      {data.plays.map((play) => (
+        <tr key={play.id}>
+          <td>{formatDate(play.played_at)}</td>
+          <td>{play.duration}</td>
+        </tr>
+      ))}
+    </table>
+  );
+};
 
 export function MessageDetails() {
   const { id } = useParams();
@@ -50,10 +75,6 @@ export function MessageDetails() {
           <h2>Recording #{data.message.id}</h2>
           <span>{formatDate(data.message.created_at)}</span>
         </div>
-        <p>Played {data.message.play_count} times</p>
-        {data.message.play_count > 0 && (
-          <p>Last played at {data.message.last_played_at}</p>
-        )}
       </section>
       <section>
         <img
@@ -70,6 +91,10 @@ export function MessageDetails() {
           showJumpControls={false}
           showSkipControls={false}
         />
+      </section>
+      <section>
+        <p>Played {data.message.play_count} times</p>
+        <MessagePlays />
       </section>
     </main>
   );

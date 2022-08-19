@@ -3,14 +3,15 @@ import { DateTime, Duration } from 'luxon';
 import { useQuery } from 'react-query';
 import { API_ROOT } from '../config';
 import { formatDate } from './MessageList';
-import { Systeminformation } from 'systeminformation';
-import { Message } from '../types';
+import { system, Systeminformation } from 'systeminformation';
+import { Message, Play } from '../types';
 import { Link } from 'react-router-dom';
 
 export const Home: React.FC = () => {
   const statsQuery = useQuery<{
     messageCount: number;
     lastMessage?: Message;
+    lastPlay?: Play;
     totalListens: number;
   }>('stats', () => fetch(`${API_ROOT}/stats`).then((res) => res.json()), {
     refetchInterval: 1000,
@@ -19,7 +20,7 @@ export const Home: React.FC = () => {
   const systemQuery = useQuery<{
     time: Systeminformation.TimeData;
     disks: Systeminformation.FsSizeData[];
-    memory: Systeminformation.MemData[];
+    memory: Systeminformation.MemData;
   }>('system', () => fetch(`${API_ROOT}/system`).then((res) => res.json()), {
     refetchInterval: 1000,
   });
@@ -49,6 +50,17 @@ export const Home: React.FC = () => {
                   {formatDate(statsQuery.data.lastMessage.created_at)}
                 </span>
                 <span className="label">Last Message Recorded</span>
+              </Link>
+            )}
+            {statsQuery.data.lastPlay != null && (
+              <Link
+                className="info-block"
+                to={`/messages/${statsQuery.data.lastPlay.message_id}`}
+              >
+                <span className="value">
+                  {formatDate(statsQuery.data.lastPlay.played_at)}
+                </span>
+                <span className="label">Last Message Played</span>
               </Link>
             )}
             <div className="info-block">
@@ -81,6 +93,15 @@ export const Home: React.FC = () => {
                 <span className="label">Disk Usage</span>
               </div>
             )}
+            <div className="info-block">
+              <span className="value">
+                {(systemQuery.data.memory.active / 1024 / 1024 / 1024).toFixed(
+                  2
+                )}
+                GB
+              </span>
+              <span className="label">Memory Usage</span>
+            </div>
           </>
         )}
       </div>
