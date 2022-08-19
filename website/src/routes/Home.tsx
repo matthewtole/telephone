@@ -32,7 +32,7 @@ export const Home: React.FC = () => {
         }, systemQuery.data.disks[0]);
 
   return (
-    <>
+    <main>
       <div className="stats">
         {statsQuery.data != null && (
           <>
@@ -84,6 +84,6 @@ export const Home: React.FC = () => {
           </>
         )}
       </div>
-    </>
+    </main>
   );
 };

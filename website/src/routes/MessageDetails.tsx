@@ -3,7 +3,6 @@ import { useQuery } from 'react-query';
 import { Link, useParams } from 'react-router-dom';
 import { API_ROOT, MESSAGES_ROOT } from '../config';
 import { formatDate } from './MessageList';
-import ReactAudioPlayer from 'react-audio-player';
 import { Message } from '../types';
 import AudioPlayer from 'react-h5-audio-player';
 
@@ -23,7 +22,15 @@ export function MessageDetails() {
   }
 
   return (
-    <>
+    <main
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1em',
+        maxWidth: '50em',
+        margin: '0 auto',
+      }}
+    >
       <header className="message__header">
         {data.previous == null ? (
           <span></span>
@@ -32,15 +39,29 @@ export function MessageDetails() {
         )}
         {data.next != null && <Link to={`../${data.next.id}`}>Next ⟶</Link>}
       </header>
-      <section style={{ maxWidth: '50em', margin: '0 auto' }}>
-        <h2>Recording #{data.message.id}</h2>
-        <p>Recorded at {formatDate(data.message.created_at)}</p>
+      <section>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <h2>Recording #{data.message.id}</h2>
+          <span>{formatDate(data.message.created_at)}</span>
+        </div>
         <p>Played {data.message.play_count} times</p>
         {data.message.play_count > 0 && (
           <p>Last played at {data.message.last_played_at}</p>
         )}
       </section>
-      <section style={{ maxWidth: '50em', margin: '0 auto' }}>
+      <section>
+        <img
+          src={`${API_ROOT}/visualize?filename=${data.message.filename}`}
+          style={{ aspectRatio: '1/4' }}
+        />
+      </section>
+      <section>
         <AudioPlayer
           src={`${MESSAGES_ROOT}/${data.message.filename}`}
           layout="horizontal"
@@ -50,6 +71,6 @@ export function MessageDetails() {
           showSkipControls={false}
         />
       </section>
-    </>
+    </main>
   );
 }

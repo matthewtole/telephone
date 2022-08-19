@@ -36,7 +36,6 @@ if __name__ == "__main__":
     db: Database = Database(DATABASE_FILE)
     db.create_tables()
     db.connection.close()
-    # return
 
     root_task = tasks.TaskSequence(
         [

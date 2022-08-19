@@ -33,53 +33,55 @@ export function MessageList() {
   );
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>
-            <Link to="?sort=created_at">Created</Link>
-          </th>
-          <th>
-            <Link to="?sort=duration">Length</Link>
-          </th>
-          <th>
-            <Link to="?sort=play_count"># Plays</Link>
-          </th>
-          <th>
-            <Link to="?sort=last_played_at">Last Play</Link>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {isLoading && <SkeletonTable numRows={3} numColumns={5} />}
-        {data != null &&
-          data.map((message) => (
-            <tr key={message.id}>
-              <td style={{ fontVariantNumeric: 'tabular-nums' }}>
-                <Link to={`${message.id}`} className="block-link">
-                  {message.id.toString().padStart(4, '0')}
-                </Link>
-              </td>
-              <td>{formatDate(message.created_at)}</td>
-              <td style={{ fontVariantNumeric: 'tabular-nums' }}>
-                {formatDuration(message.duration)}
-              </td>
-              <td
-                style={{
-                  fontVariantNumeric: 'tabular-nums',
-                  textAlign: 'right',
-                }}
-              >
-                {message.play_count}
-              </td>
-              <td>
-                {message.last_played_at != null &&
-                  formatDate(message.last_played_at)}
-              </td>
-            </tr>
-          ))}
-      </tbody>
-    </table>
+    <main>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>
+              <Link to="?sort=created_at">Created</Link>
+            </th>
+            <th>
+              <Link to="?sort=duration">Length</Link>
+            </th>
+            <th>
+              <Link to="?sort=play_count"># Plays</Link>
+            </th>
+            <th>
+              <Link to="?sort=last_played_at">Last Play</Link>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {isLoading && <SkeletonTable numRows={3} numColumns={5} />}
+          {data != null &&
+            data.map((message) => (
+              <tr key={message.id}>
+                <td style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  <Link to={`${message.id}`} className="block-link">
+                    {message.id.toString().padStart(4, '0')}
+                  </Link>
+                </td>
+                <td>{formatDate(message.created_at)}</td>
+                <td style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {formatDuration(message.duration)}
+                </td>
+                <td
+                  style={{
+                    fontVariantNumeric: 'tabular-nums',
+                    textAlign: 'right',
+                  }}
+                >
+                  {message.play_count}
+                </td>
+                <td>
+                  {message.last_played_at != null &&
+                    formatDate(message.last_played_at)}
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </main>
   );
 }

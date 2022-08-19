@@ -5,6 +5,7 @@ const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const cors = require('cors');
 const si = require('systeminformation');
+const generateWaveform = require('generate-sound-waveform');
 
 async function Db() {
   return await open({
@@ -86,6 +87,22 @@ app.get('/api/stats', async (req, res) => {
     lastMessage,
     totalListens: totalListens.sum ?? 0,
   });
+});
+
+app.get('/api/visualize', async (req, res, next) => {
+  const stream = await generateWaveform.generateSoundImage(
+    '../messages/' + req.query.filename,
+    800,
+    200,
+    {
+      stepMultiplier: 4,
+      backgroundColor: '#fff',
+      lineColor: '#277bc0',
+      globalAplha: 1,
+      lineWidth: 1,
+    }
+  );
+  stream.pipe(res);
 });
 
 app.use(express.static('dist'));
