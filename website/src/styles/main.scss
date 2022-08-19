@@ -40,12 +40,25 @@ img {
   align-items: center;
   padding: 0.5em 1em;
 
+  nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+  }
+
   a {
     color: inherit;
     text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 900;
+
+    &.active {
+      color: #fff4cf;
+    }
 
     &:hover {
-      text-decoration: underline;
+      color: #ffcb42;
     }
   }
 

@@ -1,6 +1,13 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Outlet,
+  Link,
+  NavLink,
+} from 'react-router-dom';
 import { MessageList } from './routes/MessageList';
 import { MessageDetails } from './routes/MessageDetails';
 import { Home } from './routes/Home';
@@ -19,7 +26,8 @@ function Container() {
           <Link to="/">Telephone</Link>
         </h1>
         <nav>
-          <Link to="/">Home</Link> | <Link to="messages">Messages</Link>
+          <NavLink to="/">Home</NavLink>
+          <NavLink to="messages">Messages</NavLink>
         </nav>
       </header>
 
