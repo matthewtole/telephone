@@ -88,7 +88,10 @@ app.get('/api/stats', async (req, res) => {
   });
 });
 
-app.use(express.static('public'));
+app.use(express.static('dist'));
 app.use('/messages', express.static('../messages'));
+app.get('/*', (req, res) => {
+  res.sendFile(__dirname + '/dist/index.html');
+});
 
 module.exports = app;

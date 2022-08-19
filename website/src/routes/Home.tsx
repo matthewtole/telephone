@@ -5,6 +5,7 @@ import { API_ROOT } from '../config';
 import { formatDate } from './MessageList';
 import { Systeminformation } from 'systeminformation';
 import { Message } from '../types';
+import { Link } from 'react-router-dom';
 
 export const Home: React.FC = () => {
   const statsQuery = useQuery<{
@@ -35,20 +36,20 @@ export const Home: React.FC = () => {
       <div className="stats">
         {statsQuery.data != null && (
           <>
-            <a className="info-block" href="/messages">
+            <Link className="info-block" to="/messages">
               <span className="value">{statsQuery.data.messageCount}</span>
               <span className="label">Total Messages</span>
-            </a>
+            </Link>
             {statsQuery.data.lastMessage != null && (
-              <a
+              <Link
                 className="info-block"
-                href={`/messages/${statsQuery.data.lastMessage.id}`}
+                to={`/messages/${statsQuery.data.lastMessage.id}`}
               >
                 <span className="value">
                   {formatDate(statsQuery.data.lastMessage.created_at)}
                 </span>
                 <span className="label">Last Message Recorded</span>
-              </a>
+              </Link>
             )}
             <div className="info-block">
               <span className="value">{statsQuery.data.totalListens}</span>

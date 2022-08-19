@@ -2,11 +2,13 @@
   "name": "telephone-website",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "npm run server:start",
     "server:dev": "nodemon index.js",
+    "server:start": "node index.js",
+    "preserver:start": "npm run web:build",
     "web:dev": "parcel src/index.html",
+    "web:build": "parcel build src/index.html",
     "dev": "concurrently \"npm:server:dev\" \"npm:web:dev\"",
     "test": "jest --collectCoverage",
     "db:seed": "node seed-db.js"
@@ -40,5 +42,10 @@
     "process": "^0.11.10",
     "supertest": "^6.2.4",
     "ts-jest": "^28.0.8"
+  },
+  "sass": {
+    "includePaths": [
+      "./node_modules"
+    ]
   }
 }
