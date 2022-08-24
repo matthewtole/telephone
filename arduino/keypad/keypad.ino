@@ -2,10 +2,10 @@ int outputPins[] = { 2, 3,  4,  5 };
 int inputPins[]  = { 8, 9, 10, 11 };
 
 char buttons[ 4 ][ 4 ] = {
-  { '?', '?', '?', '?' },
-  { '?', '?', '?', '?' },
-  { '?', '?', '?', '?' },
-  { '?', '?', '?', '?' }
+  { '?', '2', '3', '1' },
+  { '?', '5', '6', '4' },
+  { '?', '0', '#', '*' },
+  { '?', '8', '9', '7' },
 };
 
 void setup() {
@@ -26,13 +26,7 @@ void loop() {
     digitalWrite(outputPins[out], LOW);
     for (int in = 0; in < 4; in += 1 ) {
       if (digitalRead(inputPins[in]) == LOW) {
-        Serial.print("Match: ");
-        Serial.print(buttons[in][out]);
-        Serial.print("(");
-        Serial.print(in);
-        Serial.print(", ");
-        Serial.print(in);
-        Serial.print(")");
+        Serial.println(buttons[in][out]);
       }
     }
     pinMode(outputPins[out], INPUT_PULLUP);
