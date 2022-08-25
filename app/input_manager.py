@@ -1,3 +1,4 @@
+import time
 from gpiozero import InputDevice, OutputDevice
 from abc import abstractmethod
 import tkinter as tk
@@ -31,12 +32,11 @@ class InputManager:
 
 
 class CircuitBoard(InputManager):
-    def __init__(self, pin_factory: Any = None) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self._output_pins = [12, 16, 20, 21]
         self._input_pins = [18, 23, 24, 25]
         self.last_button = None
-        self._pin_factory = pin_factory
 
         self._mapping = [
             [Button.NUM_7, Button.NUM_9, Button.NUM_8, None],
@@ -50,13 +50,13 @@ class CircuitBoard(InputManager):
     def start(self) -> None:
         self._inputs = list(
             map(
-                lambda pin: InputDevice(pin, pull_up=True, pin_factory=self._pin_factory),
+                lambda pin: InputDevice(pin, pull_up=True),
                 self._input_pins
             )
         )
         self._outputs = list(
             map(
-                lambda pin: InputDevice(pin, pull_up=True, pin_factory=self._pin_factory),
+                lambda pin: InputDevice(pin, pull_up=True),
                 self._output_pins
             )
         )
@@ -82,6 +82,7 @@ class CircuitBoard(InputManager):
 
                 tmp.close()
                 self._outputs[o] = InputDevice(self._output_pins[o], pull_up=True)
+                time.sleep(0.1)
 
     def button_pressed(self):
         b = self.last_button

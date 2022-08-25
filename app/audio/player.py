@@ -20,6 +20,7 @@ class AudioPlayer:
         status: int,
     ):
         data = self.wave_file.readframes(frame_count)
+        print(len(data))
         return (data, pyaudio.paContinue)
 
     def play(self, filename: str) -> None:
@@ -29,6 +30,7 @@ class AudioPlayer:
             format=self.audio.get_format_from_width(self.wave_file.getsampwidth()),
             channels=self.wave_file.getnchannels(),
             rate=self.wave_file.getframerate(),
+            frames_per_buffer=512,
             output=True,
             stream_callback=self.callback,
         )
