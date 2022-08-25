@@ -3,7 +3,7 @@ from abc import abstractmethod
 import tkinter as tk
 from tkinter import ttk
 from functools import partial
-from typing import Optional
+from typing import Any, Optional
 
 from button import Button
 
@@ -31,11 +31,12 @@ class InputManager:
 
 
 class CircuitBoard(InputManager):
-    def __init__(self) -> None:
+    def __init__(self, pin_factory: Any = None) -> None:
         super().__init__()
         self._output_pins = [12, 16, 20, 21]
         self._input_pins = [18, 23, 24, 25]
         self.last_button = None
+        self._pin_factory = pin_factory
 
         self._mapping = [
             [Button.NUM_7, Button.NUM_9, Button.NUM_8, None],
@@ -47,8 +48,18 @@ class CircuitBoard(InputManager):
         self._pressed = set([])
 
     def start(self) -> None:
-        self._inputs = list(map(lambda pin: InputDevice(pin, pull_up=True), self._input_pins))
-        self._outputs = list(map(lambda pin: InputDevice(pin, pull_up=True), self._output_pins))
+        self._inputs = list(
+            map(
+                lambda pin: InputDevice(pin, pull_up=True, pin_factory=self._pin_factory),
+                self._input_pins
+            )
+        )
+        self._outputs = list(
+            map(
+                lambda pin: InputDevice(pin, pull_up=True, pin_factory=self._pin_factory),
+                self._output_pins
+            )
+        )
 
         self.is_running = True
 

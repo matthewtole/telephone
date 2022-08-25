@@ -34,7 +34,7 @@ while True:
             else:
                 if key in pressed:
                     pressed.remove(key)
-            
+
         tmp.close()
         outputs[o] = InputDevice(output_pins[o], pull_up=True)
     time.sleep(0.02)
