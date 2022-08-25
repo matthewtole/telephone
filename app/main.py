@@ -2,7 +2,7 @@ import logging
 import os
 from threading import Thread
 from audio_track import AudioTrack
-from input_manager import DesktopInputManager
+from input_manager import CircuitBoard
 from telephone import Telephone
 import tasks
 import shutil
@@ -66,9 +66,9 @@ if __name__ == "__main__":
         ]
     )
 
-    desktop = DesktopInputManager()
-    phone = Telephone(desktop, root_task, loop=True)
+    circuit = CircuitBoard()
+    phone = Telephone(circuit, root_task, loop=True)
 
     phone_thread = Thread(target=phone.start)
     phone_thread.start()
-    desktop.start()
+    circuit.start()
