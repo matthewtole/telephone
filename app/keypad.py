@@ -14,8 +14,6 @@ mapping = [
     ['1', '3', '2', None],
 ]
 
-print("Start")
-
 pressed = set([])
 
 while True:

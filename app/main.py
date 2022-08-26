@@ -1,17 +1,21 @@
+import time
+import click
 import logging
 import os
 from threading import Thread
 from audio_track import AudioTrack
-from input_manager import CircuitBoard
+from audio.player import AudioPlayer
+from input_manager import CircuitBoard, DesktopInputManager
 from telephone import Telephone
 import tasks
 import shutil
 from database import Database
+from scripts.clean import clean_messages
 
 from config import DATABASE_FILE, LOG_FILE, TEMP_DIR, MESSAGES_DIR
 
 
-def setup():
+def setup_dirs():
     logging.basicConfig(
         level=logging.DEBUG,
         filename=LOG_FILE,
@@ -31,12 +35,35 @@ def setup():
         pass
 
 
-if __name__ == "__main__":
-    setup()
+@click.group()
+def telephone():
+    pass
+
+
+@telephone.command()
+def setup():
+    setup_dirs()
     db: Database = Database(DATABASE_FILE)
     db.create_tables()
     db.connection.close()
 
+
+@telephone.command()
+def clean():
+    clean_messages()
+
+@telephone.command()
+def audio():
+    audio_player = AudioPlayer()
+    audio_player.play("audio/intro-01.wav")
+    while audio_player.is_playing:
+        audio_player.tick()
+        time.sleep(0.1)
+
+
+@click.option('-i', '--input', is_flag=False,)
+@telephone.command()
+def start(input: str):
     root_task = tasks.TaskSequence(
         [
             tasks.TaskAudioTrack(AudioTrack.INTRO),
@@ -66,9 +93,13 @@ if __name__ == "__main__":
         ]
     )
 
-    circuit = CircuitBoard()
-    phone = Telephone(circuit, root_task, loop=True)
+    input_manager = CircuitBoard() if input == "circuit" else DesktopInputManager()
+    phone = Telephone(input_manager, root_task, loop=True)
 
     phone_thread = Thread(target=phone.start)
     phone_thread.start()
-    circuit.start()
+    input_manager.start()
+
+
+if __name__ == '__main__':
+    telephone(prog_name='telephone')

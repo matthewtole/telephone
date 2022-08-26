@@ -20,7 +20,6 @@ class AudioPlayer:
         status: int,
     ):
         data = self.wave_file.readframes(frame_count)
-        print(len(data))
         return (data, pyaudio.paContinue)
 
     def play(self, filename: str) -> None:

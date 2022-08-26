@@ -58,6 +58,12 @@ class TableMessages:
         ).fetchone()
         return Message(*result)
 
+    def get_by_filename(self, filename: str) -> Optional[Message]:
+        result = self.cursor.execute(
+            "SELECT * FROM messages WHERE filename='%s'" % filename
+        ).fetchone()
+        return Message(*result) if result is not None else None
+
     def list_with_play_count(self, count: int) -> List[Message]:
         """
         Get all of the messages with the given number of play counts.
