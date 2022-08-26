@@ -37,6 +37,7 @@ class CircuitBoard(InputManager):
         self._output_pins = [12, 16, 20, 21]
         self._input_pins = [18, 23, 24, 25]
         self.last_button = None
+        self.is_running = True
 
         self._mapping = [
             [Button.NUM_7, Button.NUM_9, Button.NUM_8, None],

@@ -61,7 +61,7 @@ def audio():
         time.sleep(0.1)
 
 
-@click.option('-i', '--input', is_flag=False,)
+@click.option('-i', '--input', is_flag=False)
 @telephone.command()
 def start(input: str):
     root_task = tasks.TaskSequence(
