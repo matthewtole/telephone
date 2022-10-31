@@ -1,11 +1,8 @@
-pub mod models;
-pub mod schema;
-
-use chrono::Local;
+use chrono::Utc;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 
-use self::models::NewMessage;
+use crate::models::NewMessage;
 
 pub fn create_message(connection: &mut SqliteConnection, filename: &str, duration: &i32) {
     use crate::schema::messages;
@@ -19,12 +16,12 @@ pub fn create_message(connection: &mut SqliteConnection, filename: &str, duratio
 }
 
 pub fn add_message_listen(conn: &mut SqliteConnection, message_id: &i32) {
-    use self::schema::messages::dsl::*;
+    use crate::schema::messages::dsl::*;
 
     diesel::update(messages.filter(id.eq(message_id)))
         .set((
             play_count.eq(play_count + 1),
-            last_played_at.eq(Local::now().naive_local()),
+            last_played_at.eq(Utc::now().naive_utc()),
         ))
         .execute(conn)
         .expect("Failed to update message");
