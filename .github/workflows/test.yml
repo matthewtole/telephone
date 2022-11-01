@@ -24,7 +24,7 @@ jobs:
         with:
           command: check
 #           Temporary fix for a bug in the action
-          args: --manifest-path dir1/dir2/Cargo.toml
+          args: --manifest-path rust/Cargo.toml
     
   website:
     runs-on: ubuntu-latest
