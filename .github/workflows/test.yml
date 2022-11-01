@@ -16,6 +16,7 @@ jobs:
       run:
         working-directory: rust
     steps:
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1.0.6
         with:
           toolchain: stable
