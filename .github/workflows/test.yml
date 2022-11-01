@@ -23,6 +23,8 @@ jobs:
       - uses: actions-rs/cargo@v1.0.1
         with:
           command: check
+#           Temporary fix for a bug in the action
+          args: --manifest-path dir1/dir2/Cargo.toml
     
   website:
     runs-on: ubuntu-latest
