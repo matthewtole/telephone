@@ -10,9 +10,20 @@ permissions:
   contents: read
 
 jobs:
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - uses: actions-rs/toolchain@v1.0.6
+      - uses: actions-rs/cargo@v1.0.1
+        with:
+          command: check
+    
   website:
     runs-on: ubuntu-latest
-
+    
     defaults:
       run:
         working-directory: website
