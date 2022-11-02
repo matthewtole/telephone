@@ -26,3 +26,13 @@ pub fn add_message_listen(conn: &mut SqliteConnection, message_id: &i32) {
         .execute(conn)
         .expect("Failed to update message");
 }
+
+pub fn count(conn: &mut SqliteConnection) -> i64 {
+    use crate::schema::messages::dsl::*;
+
+    // TODO: Rewrite this to be more rusty
+    match messages.select(diesel::dsl::count_star()).get_result(conn) {
+        Ok(v) => return v,
+        Err(_) => return -1,
+    }
+}

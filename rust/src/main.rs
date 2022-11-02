@@ -1,27 +1,50 @@
 use database::establish_connection;
-use rodio::{Decoder, OutputStream, Sink};
-use std::fs::File;
-use std::io::BufReader;
+use diesel::SqliteConnection;
+use log::info;
+use simple_logger::SimpleLogger;
+use std::thread;
+mod action;
 mod database;
 mod messages;
 mod models;
 mod schema;
+use std::collections::VecDeque;
+use std::time::Duration;
 
-fn main() {
-    play_audio(String::from("../audio/digits/1.wav"));
-    play_audio(String::from("../audio/digits/2.wav"));
-
-    let mut connection = establish_connection();
-    messages::create_message(&mut connection, "hello.wav", &100);
-    messages::add_message_listen(&mut connection, &1);
-    messages::add_message_listen(&mut connection, &1);
+fn boot_checks(connection: &mut SqliteConnection) {
+    info!("Running boot up checks.");
+    assert!(
+        messages::count(connection) >= 0,
+        "Failed to access to the messages table."
+    );
+    info!("All boot up checks completed successfully!");
 }
 
-fn play_audio(filename: String) {
-    let (_stream, stream_handle) = OutputStream::try_default().unwrap();
-    let sink = Sink::try_new(&stream_handle).unwrap();
-    let file = BufReader::new(File::open(filename).unwrap());
-    let source = Decoder::new(file).unwrap();
-    sink.append(source);
-    sink.sleep_until_end();
+fn main() {
+    SimpleLogger::new().init().unwrap();
+
+    let mut connection = establish_connection();
+    boot_checks(&mut connection);
+
+    let mut actions: VecDeque<action::Action> = VecDeque::new();
+    actions.push_back(action::Action::WaitForAll(vec![
+        action::Action::Wait(Duration::from_secs(2)),
+        action::Action::PlayAudio(String::from("../audio/beep.wav")),
+    ]));
+
+    while actions.len() > 0 {
+        let action = actions.pop_front();
+        match action {
+            Some(action) => {
+                let handle = thread::spawn(|| action::execute_action(action));
+                while !handle.is_finished() {
+                    thread::sleep(std::time::Duration::from_millis(10));
+                }
+            }
+            None => {}
+        }
+    }
+
+    messages::create_message(&mut connection, "hello.wav", &100);
+    messages::add_message_listen(&mut connection, &1);
 }

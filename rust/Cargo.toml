@@ -1,5 +1,5 @@
 [package]
-name = "rust"
+name = "telephone"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,3 +10,5 @@ portaudio = "0.7.0"
 diesel = { version = "2.0.0", features = ["sqlite", "chrono"] }
 dotenvy = "0.15"
 chrono = "0.4"
+log = "0.4.17"
+simple_logger = "4.0.0"
