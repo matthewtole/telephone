@@ -20,6 +20,18 @@ curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh
 sudo apt install pkg-config alsa libasound2-dev sqlite3 libsqlite3-dev
 ```
 
+#### Install Diesel CLI
+
+```sh
+cargo install diesel_cli --no-default-features --features sqlite
+```
+
+### Setup database
+
+```
+diesel setup
+```
+
 ## Version 0
 
 ### [Messages](docs/v0-messages.md)

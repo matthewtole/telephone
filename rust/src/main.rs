@@ -44,7 +44,4 @@ fn main() {
             None => {}
         }
     }
-
-    messages::create_message(&mut connection, "hello.wav", &100);
-    messages::add_message_listen(&mut connection, &1);
 }
