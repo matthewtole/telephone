@@ -4,6 +4,22 @@
 
 An art project for [Critical NW](https://criticalnw.org) 2023.
 
+## Installation
+
+### Rust
+
+#### Install Rust
+
+```sh
+curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh
+```
+
+#### Install dependneices
+
+```sh
+sudo apt install pkg-config alsa libasound2-dev sqlite3 libsqlite3-dev
+```
+
 ## Version 0
 
 ### [Messages](docs/v0-messages.md)
