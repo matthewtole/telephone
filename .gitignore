@@ -22,3 +22,5 @@ telephone.log
 .parcel-cache/
 dist/
 coverage/
+
+rust/target

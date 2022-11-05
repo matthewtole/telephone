@@ -10,6 +10,25 @@ permissions:
   contents: read
 
 jobs:
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt install -y portaudio19-dev
+      - uses: actions-rs/toolchain@v1.0.6
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1.0.1
+        with:
+          command: check
+          #           Temporary fix for a bug in the action
+          args: --manifest-path rust/Cargo.toml
+
   website:
     runs-on: ubuntu-latest
 
