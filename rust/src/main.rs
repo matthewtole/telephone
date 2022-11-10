@@ -23,6 +23,11 @@ fn boot_checks(connection: &mut SqliteConnection) {
 fn main() {
     SimpleLogger::new().init().unwrap();
 
+    let mut recording =
+        action::audio::recorder::Recording::new().expect("Failed to start recording");
+    thread::sleep(Duration::from_secs(3));
+    recording.stop().expect("Failed to stop recording");
+
     let mut connection = establish_connection();
     boot_checks(&mut connection);
 
