@@ -1,5 +1,5 @@
+use crate::audio::audio::Track;
 use crate::database::establish_connection;
-use diesel::SqliteConnection;
 use log::info;
 use std::thread::{self, sleep};
 use std::time::Duration;
@@ -9,7 +9,7 @@ use crate::models::Message;
 
 pub enum Action {
     Wait(Duration),
-    PlayAudio(String),
+    PlayAudio(Track),
     WaitForAll(Vec<Action>),
     PlayMessage(Message),
 }
@@ -21,10 +21,10 @@ pub fn execute_action(action: Action) {
             sleep(duration);
             info!("Waited {:?}", duration);
         }
-        Action::PlayAudio(filename) => {
-            info!("Playing the audio file {}", filename);
-            audio::player::play_tmp(&filename);
-            info!("Played the audio file {}", filename);
+        Action::PlayAudio(track) => {
+            info!("Playing the audio track {:?}", &track);
+            audio::player::play_track(&track);
+            info!("Played the audio file {:?}", &track);
         }
         Action::PlayMessage(message) => {
             let mut connection = establish_connection();
@@ -48,6 +48,7 @@ pub fn execute_action(action: Action) {
 
 pub mod audio {
     pub mod player {
+        use crate::audio::audio::Track;
         use crate::models::Message;
         use rodio::{Decoder, OutputStream, Sink};
         use std::fs::File;
@@ -67,8 +68,8 @@ pub mod audio {
             sink.sleep_until_end();
         }
 
-        pub fn play_tmp(filename: &String) {
-            play(filename);
+        pub fn play_track(track: &Track) {
+            play(&track.path());
         }
     }
 }
