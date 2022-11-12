@@ -77,13 +77,16 @@ pub mod audio {
         const CHANNELS: i32 = 1;
         const INTERLEAVED: bool = true;
 
+        use std::io::BufWriter;
+
+        use hound;
         use log::{debug, info};
-        use portaudio::{self, DeviceIndex, Duplex, NonBlocking, PortAudio, Stream};
+        use portaudio::{self, DeviceIndex, Duplex, Input, NonBlocking, PortAudio, Stream};
 
         pub struct Recording {
             pa: PortAudio,
             input_device: DeviceIndex,
-            stream: Stream<NonBlocking, Duplex<f32, f32>>,
+            stream: Stream<NonBlocking, Input<f32>>,
         }
 
         impl Recording {
@@ -115,21 +118,8 @@ pub mod audio {
                 let output_info = pa.device_info(input_device)?;
                 println!("Default output device info: {:#?}", &output_info);
 
-                // Construct the output stream parameters.
-                let latency = output_info.default_low_output_latency;
-                let output_params =
-                    portaudio::StreamParameters::new(input_device, CHANNELS, INTERLEAVED, latency);
-
-                // Check that the stream format is supported.
-                pa.is_duplex_format_supported(input_params, output_params, SAMPLE_RATE)?;
-
-                // Construct the settings with which we'll open our duplex stream.
-                let settings = portaudio::DuplexStreamSettings::new(
-                    input_params,
-                    output_params,
-                    SAMPLE_RATE,
-                    FRAMES,
-                );
+                let input_settings =
+                    portaudio::InputStreamSettings::new(input_params, SAMPLE_RATE, FRAMES);
 
                 // Once the countdown reaches 0 we'll close the stream.
                 let mut count_down = 3.0;
@@ -140,10 +130,17 @@ pub mod audio {
                 // We'll use this channel to send the count_down to the main thread for fun.
                 let (sender, receiver) = ::std::sync::mpsc::channel();
 
+                let spec = hound::WavSpec {
+                    channels: 1,
+                    sample_rate: 44100,
+                    bits_per_sample: 16,
+                    sample_format: hound::SampleFormat::Int,
+                };
+                let mut writer = hound::WavWriter::create("sine.wav", spec).unwrap();
+
                 // A callback to pass to the non-blocking stream.
-                let callback = move |portaudio::DuplexStreamCallbackArgs {
-                                         in_buffer,
-                                         out_buffer,
+                let callback = move |portaudio::InputStreamCallbackArgs {
+                                         buffer,
                                          frames,
                                          time,
                                          ..
@@ -157,20 +154,21 @@ pub mod audio {
                     assert!(frames == FRAMES as usize);
                     sender.send(count_down).ok();
 
-                    // Pass the input straight to the output - BEWARE OF FEEDBACK!
-                    for (output_sample, input_sample) in out_buffer.iter_mut().zip(in_buffer.iter())
-                    {
-                        *output_sample = *input_sample;
+                    for input_sample in buffer.iter() {
+                        writer
+                            .write_sample(*input_sample)
+                            .expect("Failed to write to the wav file");
                     }
 
                     if count_down > 0.0 {
+                        writer.finalize();
                         portaudio::Continue
                     } else {
                         portaudio::Complete
                     }
                 };
 
-                let stream = pa.open_non_blocking_stream(settings, callback)?;
+                let stream = pa.open_non_blocking_stream(input_settings, callback)?;
 
                 // Construct a stream with input and output sample types of f32.
                 Ok(Self {
@@ -179,8 +177,6 @@ pub mod audio {
                     stream,
                 })
             }
-
-            fn callback(self) {}
 
             pub fn stop(&mut self) -> Result<(), portaudio::Error> {
                 if self.stream.is_stopped()? {

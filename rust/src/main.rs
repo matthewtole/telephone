@@ -34,7 +34,7 @@ fn main() {
     let mut actions: VecDeque<action::Action> = VecDeque::new();
     actions.push_back(action::Action::WaitForAll(vec![
         action::Action::Wait(Duration::from_secs(2)),
-        action::Action::PlayAudio(String::from("../audio/beep.wav")),
+        action::Action::PlayAudio(String::from("sine.wav")),
     ]));
 
     while actions.len() > 0 {
