@@ -35,6 +35,8 @@ fn boot_checks(connection: &mut SqliteConnection) -> Result<(), &str> {
         }
     }
 
+    action::audio::recorder::check_microphone().expect("Failed to find a microphone");
+
     info!("All boot up checks completed successfully!");
     Ok(())
 }

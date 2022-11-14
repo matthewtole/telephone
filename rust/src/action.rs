@@ -91,6 +91,15 @@ pub mod audio {
             stream: Stream<NonBlocking, Input<f32>>,
         }
 
+        pub fn check_microphone() -> Result<(), portaudio::Error> {
+            let pa = portaudio::PortAudio::new()?;
+            let default_host = pa.default_host_api()?;
+            let def_input = pa.default_input_device()?;
+            let input_info = pa.device_info(def_input)?;
+            pa.terminate();
+            Ok(())
+        }
+
         impl Recording {
             pub fn new() -> Result<Self, portaudio::Error> {
                 let pa = portaudio::PortAudio::new()?;
