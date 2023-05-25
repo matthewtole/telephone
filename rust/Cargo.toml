@@ -2,6 +2,12 @@
 name = "telephone"
 version = "0.1.0"
 edition = "2021"
+default-run = "telephone"
+
+[[bin]]
+name = "telephone"
+src = "src/main.rs"
+
 
 [dependencies]
 rodio = "0.16.0"
@@ -14,3 +20,4 @@ log = "0.4.17"
 simple_logger = "4.0.0"
 strum = "0.24.1"
 strum_macros = "0.24"
+
