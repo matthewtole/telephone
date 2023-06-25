@@ -3,10 +3,9 @@ import click
 import logging
 import os
 from threading import Thread
-from app.input_manager import InputManager
 from audio_track import AudioTrack
 from audio.player import AudioPlayer
-from input_manager import CircuitBoard
+from input_manager import CircuitBoard, InputManager
 from telephone import Telephone
 import tasks
 import shutil
