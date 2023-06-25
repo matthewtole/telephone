@@ -38,10 +38,10 @@ class CircuitBoard(InputManager):
         self.is_running = True
 
         self._mapping = [
-            [Button.NUM_7, Button.NUM_9, Button.NUM_8, None],
-            [Button.STAR, Button.POUND, Button.NUM_0, None],
-            [Button.NUM_4, Button.NUM_6, Button.NUM_5, None],
-            [Button.NUM_1, Button.NUM_3, Button.NUM_2, None],
+            [Button.NUM_0, Button.STAR, Button.POUND, None],
+            [Button.NUM_3, Button.NUM_9, Button.NUM_6, None],
+            [Button.NUM_2, Button.NUM_8, Button.NUM_5, None],
+            [Button.NUM_1, Button.NUM_7, Button.NUM_4, None],
         ]
 
         self._pressed = set([])
@@ -75,7 +75,7 @@ class CircuitBoard(InputManager):
 
                 tmp.close()
                 self._outputs[o] = InputDevice(self._output_pins[o], pull_up=True)
-                time.sleep(0.1)
+                time.sleep(0.05)
 
     def button_pressed(self):
         b = self.last_button

@@ -71,7 +71,7 @@ class ButtonLogger:
             button = self.input.button_pressed()
             if button is not None:
                 print(button)
-            time.sleep(0.1)
+            time.sleep(0.05)
 
 
 @telephone.command()
