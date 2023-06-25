@@ -3,6 +3,7 @@ import click
 import logging
 import os
 from threading import Thread
+from app.input_manager import InputManager
 from audio_track import AudioTrack
 from audio.player import AudioPlayer
 from input_manager import CircuitBoard
@@ -62,15 +63,25 @@ def audio():
         time.sleep(0.1)
 
 
+class ButtonLogger:
+    def __init__(self, input: InputManager):
+        self.input = input
+
+    def run(self):
+        while True:
+            button = self.input.button_pressed()
+            if button is not None:
+                print(button)
+            time.sleep(0.1)
+
+
 @telephone.command()
 def buttons():
     input_manager = CircuitBoard()
+    logger = ButtonLogger(input_manager)
+    logger = Thread(target=logger.run)
+    logger.start()
     input_manager.start()
-    while True:
-        button = input_manager.button_pressed()
-        if button is not None:
-            print(button)
-        time.sleep(0.1)
 
 
 @click.option("-i", "--input", is_flag=False)
