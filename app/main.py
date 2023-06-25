@@ -62,6 +62,17 @@ def audio():
         time.sleep(0.1)
 
 
+@telephone.command()
+def buttons():
+    input_manager = CircuitBoard()
+    input_manager.start()
+    while True:
+        button = input_manager.button_pressed()
+        if button is not None:
+            print(button)
+        time.sleep(0.1)
+
+
 @click.option("-i", "--input", is_flag=False)
 @telephone.command()
 def start(input: str):
