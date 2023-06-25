@@ -38,10 +38,10 @@ class CircuitBoard(InputManager):
         self.is_running = True
 
         self._mapping = [
-            [Button.NUM_0, Button.STAR, Button.POUND, None],
-            [Button.NUM_3, Button.NUM_9, Button.NUM_6, None],
-            [Button.NUM_2, Button.NUM_8, Button.NUM_5, None],
-            [Button.NUM_1, Button.NUM_7, Button.NUM_4, None],
+            [None, None, None, None],
+            [Button.NUM_3, Button.NUM_9, Button.NUM_6, Button.NUM_0],
+            [Button.NUM_2, Button.NUM_8, Button.NUM_5, Button.STAR],
+            [Button.NUM_1, Button.NUM_7, Button.NUM_4, Button.POUND],
         ]
 
         self._pressed = set([])
