@@ -5,7 +5,7 @@ import os
 from threading import Thread
 from audio_track import AudioTrack
 from audio.player import AudioPlayer
-from input_manager import CircuitBoard, DesktopInputManager
+from input_manager import CircuitBoard
 from telephone import Telephone
 import tasks
 import shutil
@@ -52,6 +52,7 @@ def setup():
 def clean():
     clean_messages()
 
+
 @telephone.command()
 def audio():
     audio_player = AudioPlayer()
@@ -61,7 +62,7 @@ def audio():
         time.sleep(0.1)
 
 
-@click.option('-i', '--input', is_flag=False)
+@click.option("-i", "--input", is_flag=False)
 @telephone.command()
 def start(input: str):
     root_task = tasks.TaskSequence(
@@ -93,7 +94,7 @@ def start(input: str):
         ]
     )
 
-    input_manager = CircuitBoard() if input == "circuit" else DesktopInputManager()
+    input_manager = CircuitBoard()
     phone = Telephone(input_manager, root_task, loop=True)
 
     phone_thread = Thread(target=phone.start)
@@ -101,5 +102,5 @@ def start(input: str):
     input_manager.start()
 
 
-if __name__ == '__main__':
-    telephone(prog_name='telephone')
+if __name__ == "__main__":
+    telephone(prog_name="telephone")
