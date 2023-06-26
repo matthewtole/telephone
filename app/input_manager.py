@@ -75,7 +75,7 @@ class CircuitBoard(InputManager):
 
                 tmp.close()
                 self._outputs[o] = InputDevice(self._output_pins[o], pull_up=True)
-                time.sleep(0.05)
+                time.sleep(0.01)
 
     def button_pressed(self):
         b = self.last_button
@@ -83,7 +83,7 @@ class CircuitBoard(InputManager):
         return b
 
     def is_handset_up(self) -> bool:
-        return True
+        return Button.POUND in self._pressed
 
     def stop(self) -> None:
         self.is_running = False

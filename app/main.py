@@ -116,7 +116,7 @@ def start(input: str):
     )
 
     input_manager = CircuitBoard()
-    phone = Telephone(input_manager, root_task, loop=True)
+    phone = Telephone(input_manager, root_task)
 
     phone_thread = Thread(target=phone.start)
     phone_thread.start()

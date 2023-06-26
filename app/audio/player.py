@@ -15,6 +15,7 @@ class AudioPlayer:
         self._p = subprocess.Popen(["afplay" if sys.platform == "darwin" else "aplay", filename])
 
     def stop(self) -> None:
+        self._p.kill()
         self.log.log(logging.INFO, "Audio playback stopped")
 
     def tick(self) -> None:
