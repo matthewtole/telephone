@@ -4,15 +4,12 @@ from input_manager import InputManager
 
 
 class Telephone:
-    def __init__(
-        self, input_manager: InputManager, task: Task
-    ) -> None:
+    def __init__(self, input_manager: InputManager, task: Task) -> None:
         self.input_manager = input_manager
         self.task = task
-        
+
     def start(self):
         while self.input_manager.is_running:
-            
             if self.input_manager.is_handset_up():
                 self.task.start()
             else:
@@ -22,6 +19,7 @@ class Telephone:
                 if not self.input_manager.is_handset_up():
                     print("STOP")
                     self.task.stop()
+                    self.task.reset()
                     break
 
                 self.task.tick()

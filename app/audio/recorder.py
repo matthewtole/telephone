@@ -1,60 +1,43 @@
 import logging
-import pyaudio
-import wave
+import subprocess
+import sys
+import os
 
 
 class AudioRecorder:
-    CHUNK = 1024 * 8
-    FORMAT = pyaudio.paInt16
-    CHANNELS = 1
-    RATE = 44100
-
     def __init__(self):
-        self.audio = pyaudio.PyAudio()
         self.is_recording = False
         self.log = logging.getLogger("Audio.Recorder")
-        self.stream = None
-        self.frames: list[bytes] = []
 
     def start(self):
         self.log.debug("Starting a recording session")
-        self.stream = self.audio.open(
-            format=AudioRecorder.FORMAT,
-            channels=AudioRecorder.CHANNELS,
-            rate=AudioRecorder.RATE,
-            input=True,
-            frames_per_buffer=AudioRecorder.CHUNK,
-        )
-        self.frames = []
         self.is_recording = True
+        self._p = subprocess.Popen(
+            [
+                "afrecord" if sys.platform == "darwin" else "arecord",
+                "-D",
+                "sysdefault:CARD=1",
+                "-d",
+                "10",
+                "-f",
+                "cd",
+                "-t",
+                "wav",
+                "tmp.wav",
+            ]
+        )
 
     def tick(self) -> None:
-        if (
-            self.is_recording
-            and self.stream is not None
-            and self.stream.get_read_available() >= AudioRecorder.CHUNK
-        ):
-            data = self.stream.read(AudioRecorder.CHUNK)
-            self.frames.append(data)
+        self.is_recording = self._p.poll() is None
 
     def stop(self) -> None:
         self.log.debug("Ending a recording session")
         self.is_recording = False
-        if self.stream is not None:
-            self.stream.stop_stream()
-            self.stream.close()
-        self.audio.terminate()
+        self._p.kill()
 
     def save(self, filename: str) -> None:
         self.log.debug("Saving a recording session")
-        wf = wave.open(filename, "wb")
-        wf.setnchannels(AudioRecorder.CHANNELS)
-        wf.setsampwidth(self.audio.get_sample_size(AudioRecorder.FORMAT))
-        wf.setframerate(AudioRecorder.RATE)
-        wf.writeframes(b"".join(self.frames))
-        wf.close()
-        self.frames = []
+        os.rename("tmp.wav", filename)
 
     def reset(self) -> None:
-        self.frames = []
         self.is_recording = False

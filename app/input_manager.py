@@ -83,7 +83,7 @@ class CircuitBoard(InputManager):
         return b
 
     def is_handset_up(self) -> bool:
-        return Button.POUND in self._pressed
+        return Button.POUND not in self._pressed
 
     def stop(self) -> None:
         self.is_running = False

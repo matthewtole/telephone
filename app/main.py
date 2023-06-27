@@ -3,6 +3,7 @@ import click
 import logging
 import os
 from threading import Thread
+from audio.recorder import AudioRecorder
 from audio_track import AudioTrack
 from audio.player import AudioPlayer
 from input_manager import CircuitBoard, InputManager
@@ -60,6 +61,18 @@ def audio():
     while audio_player.is_playing:
         audio_player.tick()
         time.sleep(0.1)
+
+
+@telephone.command()
+def record():
+    audio_recorder = AudioRecorder()
+    audio_recorder.start()
+    start_time = time.time()
+    while time.time() < start_time + 10:
+        audio_recorder.tick()
+        time.sleep(0.05)
+    audio_recorder.tick()
+    audio_recorder.save("demo.wav")
 
 
 class ButtonLogger:
