@@ -28,7 +28,7 @@ describe('/messages', () => {
   });
 });
 
-describe('/message/:id', () => {
+describe('GET /message/:id', () => {
   test('details of message', async () => {
     const res = await requestWithSupertest.get('/api/message/1');
     expect(res.status).toEqual(200);
@@ -52,5 +52,11 @@ describe('/message/:id', () => {
   test('404 on non-existent ID', async () => {
     const res = await requestWithSupertest.get('/api/message/0');
     expect(res.status).toEqual(404);
+  });
+});
+
+describe('DELETE /message/:id', () => {
+  test('deletes message', async () => {
+    expect((await requestWithSupertest.delete('/api/message/1')).status).toEqual(204);
   });
 });

@@ -126,7 +126,7 @@ app.delete('/api/message/:id', async (req, res) => {
   await db.run(
     `UPDATE messages SET is_deleted=1 WHERE id=${Number(req.params.id)}`
   );
-  res.send();
+  res.status(204).send();
 });
 
 app.use(express.static('dist'));
