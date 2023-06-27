@@ -45,7 +45,7 @@ app.get('/api/messages', async (req, res) => {
 
   const db = await Db();
   res.send(
-    await db.all(`SELECT * FROM messages ORDER BY ${sort} ${direction}`)
+    await db.all(`SELECT * FROM messages WHERE is_deleted=0 ORDER BY ${sort} ${direction}`)
   );
 });
 
@@ -87,10 +87,10 @@ app.get('/api/plays/:id', async (req, res) => {
 
 app.get('/api/stats', async (req, res) => {
   const db = await Db();
-  const messageCount = await db.get('SELECT COUNT(*) as count FROM messages');
+  const messageCount = await db.get('SELECT COUNT(*) as count FROM messages WHERE is_deleted=0');
   const totalListens = await db.get('SELECT COUNT(*) as count FROM plays');
   const lastMessage = await db.get(
-    'SELECT * FROM messages ORDER BY created_at DESC'
+    'SELECT * FROM messages WHERE is_deleted=0 ORDER BY created_at DESC'
   );
   const lastPlay = await db.get('SELECT * FROM plays ORDER BY played_at DESC');
   res.send({
@@ -102,7 +102,7 @@ app.get('/api/stats', async (req, res) => {
 });
 
 app.get('/api/visualize', async (req, res, next) => {
-  const stream = await generateWaveform.generateSoundImage(
+  try {const stream = await generateWaveform.generateSoundImage(
     '../messages/' + req.query.filename,
     800,
     200,
@@ -115,6 +115,18 @@ app.get('/api/visualize', async (req, res, next) => {
     }
   );
   stream.pipe(res);
+  } catch (ex) {
+    console.error(ex);
+    res.send('');
+  }
+});
+
+app.delete('/api/message/:id', async (req, res) => {
+  const db = await Db();
+  await db.run(
+    `UPDATE messages SET is_deleted=1 WHERE id=${Number(req.params.id)}`
+  );
+  res.send();
 });
 
 app.use(express.static('dist'));

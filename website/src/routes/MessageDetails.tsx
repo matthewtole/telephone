@@ -1,6 +1,7 @@
-import React from 'react';
-import { useQuery } from 'react-query';
-import { Link, useParams } from 'react-router-dom';
+import axios from 'axios';
+import React, { useCallback } from 'react';
+import { useMutation, useQuery } from 'react-query';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { API_ROOT, MESSAGES_ROOT } from '../config';
 import { formatDate } from './MessageList';
 import { Message, Play } from '../types';
@@ -33,14 +34,28 @@ const MessagePlays: React.FC = () => {
 
 export function MessageDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  const { data } = useQuery<{
+  const { data, error, isError } = useQuery<{
     message: Message;
     previous?: Message;
     next?: Message;
   }>(`messages/${id}`, () =>
     fetch(`${API_ROOT}/message/${id}`).then((res) => res.json())
   );
+
+  const deleteMessage = useMutation({
+    mutationFn: () => { 
+      return axios.delete(`${API_ROOT}/message/${id}`)
+    },
+    onSuccess: () => {
+      navigate('/messages');
+    }
+  })
+
+  if (isError) {
+    return <span>Error: {JSON.stringify(error)}</span>
+  }
 
   if (data == null) {
     return <></>;
@@ -74,6 +89,9 @@ export function MessageDetails() {
         >
           <h2>Recording #{data.message.id}</h2>
           <span>{formatDate(data.message.created_at)}</span>
+          <button onClick={() => {
+            deleteMessage.mutate();
+          }}>Delete</button>
         </div>
       </section>
       <section>

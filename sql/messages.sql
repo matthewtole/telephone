@@ -4,5 +4,6 @@ CREATE TABLE messages (
   filename TEXT NOT NULL,
   duration INT NOT NULl,
   play_count INT NOT NULl DEFAULT 0,
-  last_played_at TIMESTAMP
+  last_played_at TIMESTAMP,
+  is_deleted INT NOT NULL DEFAULT 0
 )
