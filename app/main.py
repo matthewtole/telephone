@@ -96,10 +96,8 @@ def buttons():
     input_manager.start()
 
 
-@click.option("-i", "--input", is_flag=False)
-@telephone.command()
-def start(input: str):
-    root_task = tasks.TaskSequence(
+def root_task():
+    return tasks.TaskSequence(
         [
             tasks.TaskAudioTrack(AudioTrack.INTRO),
             tasks.TaskLoop(
@@ -128,6 +126,10 @@ def start(input: str):
         ]
     )
 
+
+@click.option("-i", "--input", is_flag=False)
+@telephone.command()
+def start(input: str):
     input_manager = CircuitBoard()
     phone = Telephone(input_manager, root_task)
 

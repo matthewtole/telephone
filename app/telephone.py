@@ -1,12 +1,14 @@
 from time import sleep
 from tasks import Task
 from input_manager import InputManager
+from typing import Callable
 
 
 class Telephone:
-    def __init__(self, input_manager: InputManager, task: Task) -> None:
+    def __init__(self, input_manager: InputManager, task: Callable[..., Task]) -> None:
         self.input_manager = input_manager
-        self.task = task
+        self.task_fn = task
+        self.task = self.task_fn()
 
     def start(self):
         while self.input_manager.is_running:
