@@ -124,29 +124,20 @@ def root_task():
                 tasks.TaskSequence(
                     [
                         tasks.TaskAudioTrack(AudioTrack.MENU_1),
-                        tasks.TaskAny(
-                            [
-                                tasks.TaskDecisionTree(
-                                    {
-                                        1: tasks.TaskSequence(
-                                            [
-                                                tasks.TaskAudioTrack(
-                                                    AudioTrack.RECORD_INTRO
-                                                ),
-                                                tasks.TaskWait(0.5),
-                                                tasks.TaskAudioTrack(AudioTrack.BEEP),
-                                                tasks.TaskRecordMessage(),
-                                                tasks.TaskWait(0.5),
-                                                tasks.TaskAudioTrack(
-                                                    AudioTrack.RECORD_OUTRO
-                                                ),
-                                            ]
-                                        ),
-                                        2: tasks.TaskPlayMessage(),
-                                    }
+                        tasks.TaskDecisionTree(
+                            {
+                                1: tasks.TaskSequence(
+                                    [
+                                        tasks.TaskAudioTrack(AudioTrack.RECORD_INTRO),
+                                        tasks.TaskWait(0.5),
+                                        tasks.TaskAudioTrack(AudioTrack.BEEP),
+                                        tasks.TaskRecordMessage(),
+                                        tasks.TaskWait(0.5),
+                                        tasks.TaskAudioTrack(AudioTrack.RECORD_OUTRO),
+                                    ]
                                 ),
-                                tasks.TaskWait(10),
-                            ]
+                                2: tasks.TaskPlayMessage(),
+                            }
                         ),
                         tasks.TaskWait(1),
                     ]
