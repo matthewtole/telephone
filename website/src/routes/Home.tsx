@@ -103,7 +103,12 @@ export const Home: React.FC = () => {
               <span className="label">Memory Usage</span>
             </div>
           </>
+          
         )}
+        <Link
+          className="info-block"
+          to={`/api/logs/telephone`}
+        ><span className="value">Telephone Log</span></Link>
       </div>
     </main>
   );

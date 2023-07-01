@@ -11,6 +11,7 @@ class Message(NamedTuple):
     duration: int
     play_count: int
     last_played_at: Optional[sqlite3.Timestamp]
+    is_deleted: int
 
 
 class Play(NamedTuple):

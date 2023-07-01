@@ -87,6 +87,16 @@ class ButtonLogger:
             time.sleep(0.05)
 
 
+class HandsetLogger:
+    def __init__(self, input: InputManager):
+        self.input = input
+
+    def run(self):
+        while True:
+            print(self.input.is_handset_up())
+            time.sleep(1)
+
+
 @telephone.command()
 def buttons():
     input_manager = CircuitBoard()
@@ -96,28 +106,47 @@ def buttons():
     input_manager.start()
 
 
+@telephone.command()
+def handset():
+    input_manager = CircuitBoard()
+    logger = HandsetLogger(input_manager)
+    logger = Thread(target=logger.run)
+    logger.start()
+    input_manager.start()
+
+
 def root_task():
     return tasks.TaskSequence(
         [
+            tasks.TaskWait(1),
             tasks.TaskAudioTrack(AudioTrack.INTRO),
             tasks.TaskLoop(
                 tasks.TaskSequence(
                     [
                         tasks.TaskAudioTrack(AudioTrack.MENU_1),
-                        tasks.TaskDecisionTree(
-                            {
-                                1: tasks.TaskSequence(
-                                    [
-                                        tasks.TaskAudioTrack(AudioTrack.RECORD_INTRO),
-                                        tasks.TaskWait(0.5),
-                                        tasks.TaskAudioTrack(AudioTrack.BEEP),
-                                        tasks.TaskRecordMessage(),
-                                        tasks.TaskWait(0.5),
-                                        tasks.TaskAudioTrack(AudioTrack.RECORD_OUTRO),
-                                    ]
+                        tasks.TaskAny(
+                            [
+                                tasks.TaskDecisionTree(
+                                    {
+                                        1: tasks.TaskSequence(
+                                            [
+                                                tasks.TaskAudioTrack(
+                                                    AudioTrack.RECORD_INTRO
+                                                ),
+                                                tasks.TaskWait(0.5),
+                                                tasks.TaskAudioTrack(AudioTrack.BEEP),
+                                                tasks.TaskRecordMessage(),
+                                                tasks.TaskWait(0.5),
+                                                tasks.TaskAudioTrack(
+                                                    AudioTrack.RECORD_OUTRO
+                                                ),
+                                            ]
+                                        ),
+                                        2: tasks.TaskPlayMessage(),
+                                    }
                                 ),
-                                2: tasks.TaskPlayMessage(),
-                            }
+                                tasks.TaskWait(10),
+                            ]
                         ),
                         tasks.TaskWait(1),
                     ]

@@ -16,7 +16,7 @@ class AudioRecorder:
             [
                 "afrecord" if sys.platform == "darwin" else "arecord",
                 "-D",
-                "sysdefault:CARD=1",
+                "sysdefault:CARD=2",
                 "-d",
                 "10",
                 "-f",

@@ -16,7 +16,7 @@ node_modules/
 *.db
 temp/
 messages/
-telephone.log
+*.log
 
 # Website files
 .parcel-cache/

@@ -11,6 +11,7 @@ class InputManager:
     def __init__(self) -> None:
         self.is_running = False
         self._is_handset_up = False
+        self._handset = None
 
     @abstractmethod
     def start(self) -> None:
@@ -37,6 +38,8 @@ class CircuitBoard(InputManager):
         self.last_button = None
         self.is_running = True
 
+        self._handset_pin = 22
+
         self._mapping = [
             [None, None, None, None],
             [Button.NUM_3, Button.NUM_9, Button.NUM_6, Button.POUND],
@@ -53,6 +56,8 @@ class CircuitBoard(InputManager):
         self._outputs = list(
             map(lambda pin: InputDevice(pin, pull_up=True), self._output_pins)
         )
+
+        self._handset = InputDevice(self._handset_pin, pull_up=True)
 
         self.is_running = True
 
@@ -83,7 +88,11 @@ class CircuitBoard(InputManager):
         return b
 
     def is_handset_up(self) -> bool:
-        return Button.POUND not in self._pressed
+        if not self.is_running:
+            return False
+        if self._handset is not None:
+            return self._handset.is_active
+        return False
 
     def stop(self) -> None:
         self.is_running = False

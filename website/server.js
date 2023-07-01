@@ -6,6 +6,8 @@ const { open } = require('sqlite');
 const cors = require('cors');
 const si = require('systeminformation');
 const generateWaveform = require('generate-sound-waveform');
+const path = require('path');
+const morgan = require('morgan');
 
 async function Db() {
   return await open({
@@ -15,6 +17,7 @@ async function Db() {
 }
 
 app.use(cors());
+app.use(morgan('short'))
 
 app.get('/api/log', (req, res) => {
   const log = fs.readFileSync('../telephone.log').toString().trim();
@@ -127,6 +130,14 @@ app.delete('/api/message/:id', async (req, res) => {
     `UPDATE messages SET is_deleted=1 WHERE id=${Number(req.params.id)}`
   );
   res.status(204).send();
+});
+
+app.get('/api/logs/telephone', async (_, res) => {
+  res.sendFile(path.resolve(__dirname + '/../telephone.log'));
+});
+
+app.get('/api/logs/website', async (_, res) => {
+  res.sendFile(path.resolve(__dirname + '/../website.log'));
 });
 
 app.use(express.static('dist'));
