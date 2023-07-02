@@ -15,3 +15,5 @@ class Button(Enum):
 
     STAR = 100
     POUND = 101
+
+    REDIAL = 102

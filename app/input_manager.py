@@ -41,7 +41,7 @@ class CircuitBoard(InputManager):
         self._handset_pin = 22
 
         self._mapping = [
-            [None, None, None, None],
+            [None, None, None, Button.REDIAL],
             [Button.NUM_3, Button.NUM_9, Button.NUM_6, Button.POUND],
             [Button.NUM_2, Button.NUM_8, Button.NUM_5, Button.NUM_0],
             [Button.NUM_1, Button.NUM_7, Button.NUM_4, Button.STAR],
