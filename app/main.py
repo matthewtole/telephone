@@ -147,9 +147,8 @@ def root_task():
     )
 
 
-@click.option("-i", "--input", is_flag=False)
 @telephone.command()
-def start(input: str):
+def start():
     input_manager = CircuitBoard()
     phone = Telephone(input_manager, root_task)
 
