@@ -3,6 +3,7 @@ import click
 import logging
 import os
 from threading import Thread
+from audio.process import AudioProcessor
 from audio.recorder import AudioRecorder
 from audio_track import AudioTrack
 from audio.player import AudioPlayer
@@ -115,6 +116,18 @@ def handset():
     input_manager.start()
 
 
+def processor():
+    db: Database = Database(DATABASE_FILE)
+    processor = AudioProcessor(db)
+    processor.start()
+
+
+@telephone.command()
+def process():
+    thread = Thread(target=processor)
+    thread.start()
+
+
 def root_task():
     return tasks.TaskSequence(
         [
@@ -151,6 +164,9 @@ def root_task():
 def start():
     input_manager = CircuitBoard()
     phone = Telephone(input_manager, root_task)
+
+    process_thread = Thread(target=processor)
+    process_thread.start()
 
     phone_thread = Thread(target=phone.start)
     phone_thread.start()

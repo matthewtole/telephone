@@ -8,6 +8,10 @@ class AudioRecorder:
     def __init__(self):
         self.is_recording = False
         self.log = logging.getLogger("Audio.Recorder")
+        # Get the ID of the audio hardware device
+        self.hw = subprocess.check_output(["./get-audio-hw.sh"], shell=True).decode(
+            "utf-8"
+        )
 
     def start(self):
         self.log.debug("Starting a recording session")
@@ -16,7 +20,7 @@ class AudioRecorder:
             [
                 "afrecord" if sys.platform == "darwin" else "arecord",
                 "-D",
-                "sysdefault:CARD=2",
+                "sysdefault:CARD=" + self.hw,
                 "-d",
                 "10",
                 "-f",

@@ -12,6 +12,7 @@ class Message(NamedTuple):
     play_count: int
     last_played_at: Optional[sqlite3.Timestamp]
     is_deleted: int
+    process_state: int
 
 
 class Play(NamedTuple):
@@ -70,7 +71,8 @@ class TableMessages:
         Get all of the messages with the given number of play counts.
         """
         result = self.cursor.execute(
-            "SELECT * FROM %s WHERE play_count=%d" % (TableMessages.TABLE_NAME, count)
+            "SELECT * FROM %s WHERE play_count=%d AND is_deleted=0 AND process_state=1"
+            % (TableMessages.TABLE_NAME, count)
         ).fetchall()
         return list(map(lambda r: Message(*r), result))
 
@@ -97,9 +99,26 @@ class TableMessages:
         Return the total count of messages
         """
         result = self.cursor.execute(
-            "SELECT COUNT(*) as count FROM %s" % TableMessages.TABLE_NAME
+            "SELECT COUNT(*) as count FROM %s WHERE is_deleted=0 AND process_state=1"
+            % TableMessages.TABLE_NAME
         ).fetchone()
         return result[0]
+
+    def get_unprocessed(self) -> Optional[Message]:
+        """
+        Get a message that hasn't been processed yet
+        """
+        result = self.cursor.execute(
+            "SELECT * FROM %s WHERE process_state=0 LIMIT 1" % TableMessages.TABLE_NAME
+        ).fetchone()
+        return Message(*result) if result is not None else None
+
+    def mark_processed(self, id: int) -> None:
+        self.cursor.execute(
+            "UPDATE %s SET process_state=1 WHERE id=%d"
+            % (TableMessages.TABLE_NAME, id),
+        )
+        self.connection.commit()
 
 
 class TablePlays:

@@ -5,5 +5,6 @@ CREATE TABLE messages (
   duration INT NOT NULl,
   play_count INT NOT NULl DEFAULT 0,
   last_played_at TIMESTAMP,
-  is_deleted INT NOT NULL DEFAULT 0
+  is_deleted INT NOT NULL DEFAULT 0,
+  process_state INT NOT NULL DEFAULT 0
 )
