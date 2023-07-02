@@ -363,10 +363,8 @@ class TaskRecordMessage(TaskRunTask):
 
     def stop(self) -> None:
         self.task.stop() if self.task is not None else None
-        self._messaged_saved = True
         # TODO: Consider chopping off the end of the recording to eliminate the click
-        duration = time() - self._start_time
-        self._DB(DATABASE_FILE).messages.insert(self._filename, int(duration))
+        self._save()
 
     def tick(self):
         super().tick()
@@ -375,9 +373,7 @@ class TaskRecordMessage(TaskRunTask):
             and self.task.is_complete()
             and not self._messaged_saved
         ):
-            self._messaged_saved = True
-            duration = time() - self._start_time
-            self._DB(DATABASE_FILE).messages.insert(self._filename, int(duration))
+            self._save()
 
     def is_complete(self) -> bool:
         return super().is_complete() and self._messaged_saved
@@ -385,6 +381,13 @@ class TaskRecordMessage(TaskRunTask):
     def reset(self) -> None:
         self.setup()
         return super().reset()
+
+    def _save(self) -> None:
+        self._messaged_saved = True
+
+        duration = time() - self._start_time
+        # TODO: Don't save messages under X seconds long
+        self._DB(DATABASE_FILE).messages.insert(self._filename, int(duration))
 
 
 class TaskPlayback(TaskAudio):
