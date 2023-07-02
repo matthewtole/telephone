@@ -326,6 +326,8 @@ class TaskRecord(Task):
 
     def stop(self) -> None:
         self._audio_recorder.stop()
+        self._audio_recorder.save(self._filename)
+        self._is_complete = True
 
     def is_complete(self) -> bool:
         return self._is_complete
@@ -358,6 +360,13 @@ class TaskRecordMessage(TaskRunTask):
     def start(self) -> None:
         self._start_time = time()
         super().start()
+
+    def stop(self) -> None:
+        self.task.stop() if self.task is not None else None
+        self._messaged_saved = True
+        # TODO: Consider chopping off the end of the recording to eliminate the click
+        duration = time() - self._start_time
+        self._DB(DATABASE_FILE).messages.insert(self._filename, int(duration))
 
     def tick(self):
         super().tick()
