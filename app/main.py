@@ -152,7 +152,11 @@ def root_task():
                                 2: tasks.TaskSequence(
                                     [
                                         tasks.TaskWait(0.5),
+                                        tasks.TaskAudioTrack(AudioTrack.LISTEN_INTRO),
+                                        tasks.TaskWait(0.25),
                                         tasks.TaskPlayMessage(),
+                                        tasks.TaskWait(0.25),
+                                        tasks.TaskAudioTrack(AudioTrack.LISTEN_OUTRO),
                                         tasks.TaskWait(0.5),
                                     ]
                                 ),
