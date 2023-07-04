@@ -295,14 +295,15 @@ class TaskRecord(Task):
 
     def on_button(self, button: Button) -> None:
         if button == self._end_button:
+            self._is_complete = True
+            self._audio_recorder.stop()
+            self._audio_recorder.save(self._filename)
+
+    def stop(self) -> None:
+        if not self._is_complete:
             self._audio_recorder.stop()
             self._audio_recorder.save(self._filename)
             self._is_complete = True
-
-    def stop(self) -> None:
-        self._audio_recorder.stop()
-        self._audio_recorder.save(self._filename)
-        self._is_complete = True
 
     def is_complete(self) -> bool:
         return self._is_complete
@@ -389,14 +390,16 @@ class TaskPlayMessage(TaskRunTask):
 
 
 class TaskDecisionTree(TaskRunTask):
-    def __init__(
-        self,
-        tree: dict[int, Task],
-    ) -> None:
+    def __init__(self, tree: dict[int, Task], timeout: int = 10) -> None:
         super().__init__()
         self._tree = tree
         self.task = TaskChoice()
         self.has_chosen = False
+        self._end_time = -1
+        self._timeout = timeout
+
+    def start(self) -> None:
+        self._end_time = time() + self._timeout
 
     def tick(self) -> None:
         super().tick()
@@ -414,6 +417,8 @@ class TaskDecisionTree(TaskRunTask):
                 self.task.start()
 
     def is_complete(self) -> bool:
+        if self._end_time > 0 and time() >= self._end_time:
+            return True
         return self.has_chosen and self.task.is_complete()
 
     def reset(self) -> None:

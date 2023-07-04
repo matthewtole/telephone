@@ -41,7 +41,10 @@ class AudioRecorder:
 
     def save(self, filename: str) -> None:
         self.log.debug("Saving a recording session")
-        os.rename("tmp.wav", filename)
+        try:
+            os.rename("tmp.wav", filename)
+        except FileNotFoundError:
+            pass
 
     def reset(self) -> None:
         self.is_recording = False
