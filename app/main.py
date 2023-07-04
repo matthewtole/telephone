@@ -136,11 +136,11 @@ def root_task():
             tasks.TaskLoop(
                 tasks.TaskSequence(
                     [
-                        tasks.TaskAudioTrack(AudioTrack.MENU_1),
                         tasks.TaskDecisionTree(
                             {
                                 1: tasks.TaskSequence(
                                     [
+                                        tasks.TaskWait(0.5),
                                         tasks.TaskAudioTrack(AudioTrack.RECORD_INTRO),
                                         tasks.TaskWait(0.5),
                                         tasks.TaskAudioTrack(AudioTrack.BEEP),
@@ -149,8 +149,16 @@ def root_task():
                                         tasks.TaskAudioTrack(AudioTrack.RECORD_OUTRO),
                                     ]
                                 ),
-                                2: tasks.TaskPlayMessage(),
-                            }
+                                2: tasks.TaskSequence(
+                                    [
+                                        tasks.TaskWait(0.5),
+                                        tasks.TaskPlayMessage(),
+                                        tasks.TaskWait(0.5),
+                                    ]
+                                ),
+                            },
+                            intro_task=tasks.TaskAudioTrack(AudioTrack.MENU_1),
+                            timeout=10,
                         ),
                         tasks.TaskWait(1),
                     ]
