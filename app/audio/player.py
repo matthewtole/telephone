@@ -8,6 +8,7 @@ class AudioPlayer:
         super().__init__()
         self.is_playing = False
         self.log = logging.getLogger("Audio.Player")
+        self._p = None
 
     def play(self, filename: str) -> None:
         self.log.log(logging.INFO, "Playing %s" % filename)
@@ -17,8 +18,10 @@ class AudioPlayer:
         )
 
     def stop(self) -> None:
+        self.log.error("Stopping audio playback")
+        self._p.terminate() if self._p is not None else None
         self._p.kill() if self._p is not None else None
         self.log.log(logging.INFO, "Audio playback stopped")
 
     def tick(self) -> None:
-        self.is_playing = self._p.poll() is None
+        self.is_playing = self._p.poll() is None if self._p is not None else False

@@ -162,6 +162,8 @@ def root_task():
 
 @telephone.command()
 def start():
+    setup_dirs()
+
     input_manager = CircuitBoard()
     phone = Telephone(input_manager, root_task)
 
