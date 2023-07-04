@@ -25,7 +25,6 @@ const MessagePlays: React.FC = () => {
       {data.plays.map((play) => (
         <tr key={play.id}>
           <td>{formatDate(play.played_at)}</td>
-          <td>{play.duration}</td>
         </tr>
       ))}
     </table>
@@ -108,6 +107,9 @@ export function MessageDetails() {
           customVolumeControls={[]}
           showJumpControls={false}
           showSkipControls={false}
+          showDownloadProgress
+          autoPlayAfterSrcChange={false}
+      
         />
       </section>
       <section>

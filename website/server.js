@@ -62,11 +62,11 @@ app.get('/api/message/:id', async (req, res) => {
     return;
   }
   const previous = await db.get(
-    `SELECT * FROM messages WHERE created_at < ? ORDER BY created_at DESC`,
+    `SELECT * FROM messages WHERE created_at < ? AND is_deleted=0 ORDER BY created_at DESC`,
     [message.created_at]
   );
   const next = await db.get(
-    `SELECT * FROM messages WHERE created_at > ? ORDER BY created_at ASC`,
+    `SELECT * FROM messages WHERE created_at > ? AND is_deleted=0 ORDER BY created_at ASC`,
     [message.created_at]
   );
   res.send({

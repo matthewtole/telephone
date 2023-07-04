@@ -7,7 +7,9 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Message } from '../types';
 
 export function formatDate(date) {
-  return DateTime.fromSQL(date).toFormat('M/dd t');
+  // format with the day of the week
+
+  return DateTime.fromSQL(date).toFormat('ccc M/dd t');
 }
 
 export function formatDuration(duration) {
