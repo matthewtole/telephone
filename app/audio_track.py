@@ -2,12 +2,14 @@ from enum import Enum
 
 
 class AudioTrack(Enum):
-    INTRO = "intro-01.wav"
-    LEAVE_MESSAGE = "leave-message.wav"
-    MENU_1 = "menu-1.wav"
-    RECORD_INTRO = "record-intro.wav"
-    RECORD_OUTRO = "record-outro.wav"
+    INTRO = "4th/1.wav"
+    MENU_1 = "4th/2.wav"
+    RECORD_INTRO = "4th/3.wav"
+    RECORD_OUTRO = "4th/4.wav"
     BEEP = "beep.wav"
+    LISTEN_INTRO = "4th/5.wav"
+    LISTEN_OUTRO = "4th/6.wav"
+    INVALID_OPTION = "4th/7.wav"
 
     # DIGIT_0 = "digits/0.wav"
     DIGIT_1 = "digits/1.wav"

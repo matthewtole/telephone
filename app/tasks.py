@@ -391,7 +391,11 @@ class TaskPlayMessage(TaskRunTask):
 
 class TaskDecisionTree(TaskRunTask):
     def __init__(
-        self, tree: dict[int, Task], intro_task: Task, timeout: int = 10
+        self,
+        tree: dict[int, Task],
+        intro_task: Task,
+        invalid_choice: Task,
+        timeout: int = 10,
     ) -> None:
         super().__init__()
         self._tree = tree
@@ -400,6 +404,7 @@ class TaskDecisionTree(TaskRunTask):
         self._end_time = -1
         self._timeout = timeout
         self._intro_task = intro_task
+        self._invalid_choice = invalid_choice
 
     def start(self) -> None:
         self._end_time = time() + self._timeout
@@ -418,11 +423,11 @@ class TaskDecisionTree(TaskRunTask):
             choice: int = self.task.choice  # type: ignore
             self.task = self._tree.get(choice)
             if self.task is None:
-                self.log.warn("Invalid choice %d" % choice)
-            else:
-                self.has_chosen = True
-                self._intro_task.stop()
-                self.task.start()
+                self.task = self._invalid_choice
+
+            self.has_chosen = True
+            self._intro_task.stop()
+            self.task.start()
 
     def is_complete(self) -> bool:
         if not self.has_chosen and self._end_time > 0 and time() >= self._end_time:

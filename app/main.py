@@ -157,6 +157,9 @@ def root_task():
                                     ]
                                 ),
                             },
+                            invalid_choice=tasks.TaskAudioTrack(
+                                AudioTrack.INVALID_OPTION
+                            ),
                             intro_task=tasks.TaskAudioTrack(AudioTrack.MENU_1),
                             timeout=10,
                         ),
