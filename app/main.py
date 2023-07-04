@@ -1,3 +1,5 @@
+import datetime
+import subprocess
 import time
 import click
 import logging
@@ -13,7 +15,7 @@ import tasks
 import shutil
 from database import Database
 from scripts.clean import clean_messages
-
+import re
 from config import DATABASE_FILE, LOG_FILE, TEMP_DIR, MESSAGES_DIR
 
 
@@ -180,6 +182,29 @@ def root_task():
             ),
         ]
     )
+
+
+@telephone.command()
+@click.argument("path", type=click.Path(exists=True, dir_okay=False))
+def add(path: str):
+    db: Database = Database(DATABASE_FILE)
+    process = subprocess.Popen(
+        ["ffmpeg", "-i", path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
+    stdout, _ = process.communicate()
+    matches = re.search(
+        r"Duration:\s{1}(?P<hours>\d+?):(?P<minutes>\d+?):(?P<seconds>\d+\.\d+?),",
+        stdout.decode(),
+        re.DOTALL,
+    ).groupdict()
+
+    duration = round(int(matches["minutes"]) * 60 + float(matches["seconds"]))
+    db.messages.insert(
+        os.path.basename(path),
+        duration,
+        datetime.datetime.fromtimestamp(os.path.getctime(path)),
+    )
+    os.rename(path, os.path.join(MESSAGES_DIR, os.path.basename(path)))
 
 
 @telephone.command()

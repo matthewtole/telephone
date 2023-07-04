@@ -42,11 +42,17 @@ class TableMessages:
         sql = "".join(open("sql/messages.sql", "r").readlines())
         self.cursor.execute(sql)
 
-    def insert(self, filename: str, duration: int) -> Optional[int]:
+    def insert(
+        self, filename: str, duration: int, created_at: Optional[datetime.datetime]=None
+    ) -> Optional[int]:
         self.cursor.execute(
             "INSERT INTO %s (created_at, filename, duration) VALUES (?, ?, ?)"
             % TableMessages.TABLE_NAME,
-            (datetime.datetime.now(), filename, duration),
+            (
+                datetime.datetime.now() if created_at is None else created_at,
+                filename,
+                duration,
+            ),
         )
         self.connection.commit()
         return self.cursor.lastrowid
@@ -70,9 +76,24 @@ class TableMessages:
         """
         Get all of the messages with the given number of play counts.
         """
+        one_hour_ago = datetime.datetime.now() - datetime.timedelta(hours=1)
         result = self.cursor.execute(
-            "SELECT * FROM %s WHERE play_count=%d AND is_deleted=0 AND process_state=1"
-            % (TableMessages.TABLE_NAME, count)
+            """
+            SELECT *
+            FROM %s
+            WHERE play_count=%d
+                AND is_deleted=0
+                AND process_state=1
+                AND created_at < "%s"
+            ORDER BY filename
+            LIMIT 50
+            """
+            % (
+                TableMessages.TABLE_NAME,
+                count,
+                # one hour ago
+                one_hour_ago.strftime("%Y-%m-%d %H:%M:%S"),
+            )
         ).fetchall()
         return list(map(lambda r: Message(*r), result))
 

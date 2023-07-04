@@ -325,6 +325,7 @@ class TaskRecordMessage(TaskRunTask):
         self._DB = DB
         self.setup()
         self._start_time = 0
+        self._messaged_saved = False
 
     def setup(self):
         self._filename = "%s.wav" % uuid.uuid4().hex
@@ -335,6 +336,7 @@ class TaskRecordMessage(TaskRunTask):
 
     def start(self) -> None:
         self._start_time = time()
+        self._messaged_saved = False
         super().start()
 
     def stop(self) -> None:
@@ -355,6 +357,8 @@ class TaskRecordMessage(TaskRunTask):
         return super().reset()
 
     def _save(self) -> None:
+        if self._messaged_saved:
+            return
         self._messaged_saved = True
 
         duration = time() - self._start_time
@@ -385,6 +389,8 @@ class TaskPlayMessage(TaskRunTask):
                 super().start()
                 break
             count += 1
+        if count == 100:
+            self.log.error("Could not find a message to play")
 
         db.connection.close()
 
