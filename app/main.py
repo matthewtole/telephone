@@ -161,8 +161,15 @@ def root_task():
                                     ]
                                 ),
                             },
-                            invalid_choice=tasks.TaskAudioTrack(
-                                AudioTrack.INVALID_OPTION
+                            invalid_choice=tasks.TaskRandomTask(
+                                [
+                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_1),
+                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_2),
+                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_3),
+                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_4),
+                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_5),
+                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_6),
+                                ]
                             ),
                             intro_task=tasks.TaskAudioTrack(AudioTrack.MENU_1),
                             timeout=10,

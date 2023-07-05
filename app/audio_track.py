@@ -9,7 +9,12 @@ class AudioTrack(Enum):
     BEEP = "beep.wav"
     LISTEN_INTRO = "4th/5.wav"
     LISTEN_OUTRO = "4th/6.wav"
-    INVALID_OPTION = "4th/7.wav"
+    INVALID_OPTION_1 = "4th/7.wav"
+    INVALID_OPTION_2 = "4th/8.wav"
+    INVALID_OPTION_3 = "4th/9.wav"
+    INVALID_OPTION_4 = "4th/10.wav"
+    INVALID_OPTION_5 = "4th/11.wav"
+    INVALID_OPTION_6 = "4th/12.wav"
 
     # DIGIT_0 = "digits/0.wav"
     DIGIT_1 = "digits/1.wav"
