@@ -43,7 +43,10 @@ class TableMessages:
         self.cursor.execute(sql)
 
     def insert(
-        self, filename: str, duration: int, created_at: Optional[datetime.datetime]=None
+        self,
+        filename: str,
+        duration: int,
+        created_at: Optional[datetime.datetime] = None,
     ) -> Optional[int]:
         self.cursor.execute(
             "INSERT INTO %s (created_at, filename, duration) VALUES (?, ?, ?)"
@@ -76,7 +79,7 @@ class TableMessages:
         """
         Get all of the messages with the given number of play counts.
         """
-        one_hour_ago = datetime.datetime.now() - datetime.timedelta(hours=1)
+        one_hour_ago = datetime.datetime.now() - datetime.timedelta(minutes=1)
         result = self.cursor.execute(
             """
             SELECT *

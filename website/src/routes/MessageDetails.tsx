@@ -109,6 +109,8 @@ export function MessageDetails() {
           showSkipControls={false}
           showDownloadProgress
           autoPlayAfterSrcChange={false}
+          preload="auto"
+
       
         />
       </section>
