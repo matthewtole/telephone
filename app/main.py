@@ -162,6 +162,17 @@ def root_task():
                                         tasks.TaskWait(0.5),
                                     ]
                                 ),
+                                0: tasks.TaskLoop(
+                                    tasks.TaskSequence(
+                                        [
+                                            tasks.TaskWait(0.5),
+                                            tasks.TaskAudioTrack(AudioTrack.HOLD_MUSIC),
+                                            tasks.TaskAudioTrack(
+                                                AudioTrack.HOLD_MESSAGE
+                                            ),
+                                        ]
+                                    )
+                                ),
                             },
                             invalid_choice=tasks.TaskRandomTask(
                                 [
@@ -173,7 +184,13 @@ def root_task():
                                     tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_6),
                                 ]
                             ),
-                            intro_task=tasks.TaskAudioTrack(AudioTrack.MENU_1),
+                            intro_task=tasks.TaskSequence(
+                                [
+                                    tasks.TaskAudioTrack(AudioTrack.MENU_1),
+                                    tasks.TaskWait(3),
+                                    tasks.TaskAudioTrack(AudioTrack.MENU_2),
+                                ]
+                            ),
                             timeout=10,
                         ),
                         tasks.TaskWait(1),
