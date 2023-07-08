@@ -75,11 +75,12 @@ class TableMessages:
         ).fetchone()
         return Message(*result) if result is not None else None
 
-    def list_with_play_count(self, count: int) -> List[Message]:
+    def list_playback_suggestions(self, count: int) -> List[Message]:
         """
         Get all of the messages with the given number of play counts.
         """
-        one_hour_ago = datetime.datetime.now() - datetime.timedelta(minutes=1)
+        one_hour_ago = datetime.datetime.now() - datetime.timedelta(hours=1)
+        ten_minutes_ago = datetime.datetime.now() - datetime.timedelta(minutes=10)
         result = self.cursor.execute(
             """
             SELECT *
@@ -88,23 +89,18 @@ class TableMessages:
                 AND is_deleted=0
                 AND process_state=1
                 AND created_at < "%s"
+                AND last_played_at < "%s"
             ORDER BY filename
             LIMIT 50
             """
             % (
                 TableMessages.TABLE_NAME,
                 count,
-                # one hour ago
                 one_hour_ago.strftime("%Y-%m-%d %H:%M:%S"),
+                ten_minutes_ago.strftime("%Y-%m-%d %H:%M:%S"),
             )
         ).fetchall()
         return list(map(lambda r: Message(*r), result))
-
-    def list_unplayed(self) -> List[Message]:
-        """
-        Get all of the messages that haven't been played yet.
-        """
-        return self.list_with_play_count(0)
 
     def play(self, id: int) -> None:
         """

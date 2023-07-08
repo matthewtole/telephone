@@ -378,7 +378,7 @@ class TaskPlayMessage(TaskRunTask):
 
         count = 0
         while count < 100:
-            messages = db.messages.list_with_play_count(count)
+            messages = db.messages.list_playback_suggestions(count)
             if len(messages) > 0:
                 message = random.choice(messages)
                 self.task = TaskAudio(
