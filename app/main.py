@@ -160,11 +160,35 @@ def root_task():
                                         tasks.TaskWait(0.5),
                                     ]
                                 ),
+                                3: tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_1),
+                                4: tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_2),
+                                5: tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_3),
+                                6: tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_4),
+                                7: tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_5),
+                                8: tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_6),
+                                0: tasks.TaskLoop(
+                                    tasks.TaskSequence(
+                                        [
+                                            tasks.TaskWait(0.5),
+                                            tasks.TaskAudioTrack(
+                                                AudioTrack.HOLD_MESSAGE
+                                            ),
+                                            tasks.TaskWait(0.5),
+                                            tasks.TaskAudioTrack(AudioTrack.HOLD_MUSIC),
+                                        ]
+                                    )
+                                ),
                             },
                             invalid_choice=tasks.TaskAudioTrack(
-                                AudioTrack.INVALID_OPTION
+                                AudioTrack.INVALID_OPTION_3
                             ),
-                            intro_task=tasks.TaskAudioTrack(AudioTrack.MENU_1),
+                            intro_task=tasks.TaskSequence(
+                                [
+                                    tasks.TaskAudioTrack(AudioTrack.MENU_1),
+                                    tasks.TaskWait(3),
+                                    tasks.TaskAudioTrack(AudioTrack.MENU_2),
+                                ]
+                            ),
                             timeout=10,
                         ),
                         tasks.TaskWait(1),

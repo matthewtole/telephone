@@ -4,12 +4,21 @@ from enum import Enum
 class AudioTrack(Enum):
     INTRO = "4th/1.wav"
     MENU_1 = "4th/2.wav"
+    MENU_2 = "4th/13.wav"
     RECORD_INTRO = "4th/3.wav"
     RECORD_OUTRO = "4th/4.wav"
     BEEP = "beep.wav"
     LISTEN_INTRO = "4th/5.wav"
     LISTEN_OUTRO = "4th/6.wav"
-    INVALID_OPTION = "4th/7.wav"
+    INVALID_OPTION_1 = "4th/7.wav"
+    INVALID_OPTION_2 = "4th/8.wav"
+    INVALID_OPTION_3 = "4th/9.wav"
+    INVALID_OPTION_4 = "4th/10.wav"
+    INVALID_OPTION_5 = "4th/11.wav"
+    INVALID_OPTION_6 = "4th/12.wav"
+
+    HOLD_MUSIC = "hold-music-mono.wav"
+    HOLD_MESSAGE = "4th/15.wav"
 
     # DIGIT_0 = "digits/0.wav"
     DIGIT_1 = "digits/1.wav"

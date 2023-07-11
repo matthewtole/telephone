@@ -443,3 +443,17 @@ class TaskDecisionTree(TaskRunTask):
         self._intro_task.reset()
         self.has_chosen = False
         self.task = TaskChoice()
+
+
+class TaskRandomTask(TaskRunTask):
+    def __init__(self, tasks: list[Task]) -> None:
+        super().__init__()
+        self._tasks = tasks
+        self._task = None
+
+    def start(self) -> None:
+        self._task = random.choice(self._tasks)
+        self._task.start()
+
+    def is_complete(self) -> bool:
+        return self.task.is_complete()
