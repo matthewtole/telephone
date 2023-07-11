@@ -397,11 +397,7 @@ class TaskPlayMessage(TaskRunTask):
 
 class TaskDecisionTree(TaskRunTask):
     def __init__(
-        self,
-        tree: dict[int, Task],
-        intro_task: Task,
-        invalid_choice: Task,
-        timeout: int = 10,
+        self, tree: dict[int, Task], intro_task: Task, timeout: int = 10
     ) -> None:
         super().__init__()
         self._tree = tree
@@ -410,7 +406,6 @@ class TaskDecisionTree(TaskRunTask):
         self._end_time = -1
         self._timeout = timeout
         self._intro_task = intro_task
-        self._invalid_choice = invalid_choice
 
     def start(self) -> None:
         self._end_time = time() + self._timeout
@@ -422,18 +417,18 @@ class TaskDecisionTree(TaskRunTask):
         self._intro_task.tick()
 
         if (
-            not self.has_chosen
+            self.has_chosen is False
             and self.task.is_complete()
             and self.task.__class__ == TaskChoice
         ):
             choice: int = self.task.choice  # type: ignore
             self.task = self._tree.get(choice)
             if self.task is None:
-                self.task = self._invalid_choice
-
-            self.has_chosen = True
-            self._intro_task.stop()
-            self.task.start()
+                self.log.warn("Invalid choice %d" % choice)
+            else:
+                self.has_chosen = True
+                self._intro_task.stop()
+                self.task.start()
 
     def is_complete(self) -> bool:
         if not self.has_chosen and self._end_time > 0 and time() >= self._end_time:
@@ -449,23 +444,3 @@ class TaskDecisionTree(TaskRunTask):
         self._intro_task.reset()
         self.has_chosen = False
         self.task = TaskChoice()
-
-
-class TaskRandomTask(TaskRunTask):
-    def __init__(self, tasks: list[Task]) -> None:
-        super().__init__()
-        self._tasks = tasks
-        self._task = None
-
-    def start(self) -> None:
-        self._task = random.choice(self._tasks)
-        self._task.start()
-
-
-class TaskPrint(Task):
-    def __init__(self, message: str) -> None:
-        super().__init__()
-        self._message = message
-
-    def start(self) -> None:
-        print(self._message)
