@@ -8,7 +8,7 @@ from threading import Thread
 from audio.process import AudioProcessor
 from audio.recorder import AudioRecorder
 from audio_track import AudioTrack
-from audio.player import AudioPlayer
+from audio.player import AudioPlayer, DebugAudioPlayer
 from input_manager import CircuitBoard, InputManager
 from telephone import Telephone
 import tasks
@@ -131,10 +131,11 @@ def process():
 
 
 def root_task():
+    audio_player = DebugAudioPlayer()
     return tasks.TaskSequence(
         [
             tasks.TaskWait(1),
-            tasks.TaskAudioTrack(AudioTrack.INTRO),
+            tasks.TaskAudioTrack(AudioTrack.INTRO, audio_player),
             tasks.TaskLoop(
                 tasks.TaskSequence(
                     [
@@ -143,22 +144,32 @@ def root_task():
                                 1: tasks.TaskSequence(
                                     [
                                         tasks.TaskWait(0.5),
-                                        tasks.TaskAudioTrack(AudioTrack.RECORD_INTRO),
+                                        tasks.TaskAudioTrack(
+                                            AudioTrack.RECORD_INTRO, audio_player
+                                        ),
                                         tasks.TaskWait(0.5),
-                                        tasks.TaskAudioTrack(AudioTrack.BEEP),
+                                        tasks.TaskAudioTrack(
+                                            AudioTrack.BEEP, audio_player
+                                        ),
                                         tasks.TaskRecordMessage(),
                                         tasks.TaskWait(0.5),
-                                        tasks.TaskAudioTrack(AudioTrack.RECORD_OUTRO),
+                                        tasks.TaskAudioTrack(
+                                            AudioTrack.RECORD_OUTRO, audio_player
+                                        ),
                                     ]
                                 ),
                                 2: tasks.TaskSequence(
                                     [
                                         tasks.TaskWait(0.5),
-                                        tasks.TaskAudioTrack(AudioTrack.LISTEN_INTRO),
+                                        tasks.TaskAudioTrack(
+                                            AudioTrack.LISTEN_INTRO, audio_player
+                                        ),
                                         tasks.TaskWait(0.25),
                                         tasks.TaskPlayMessage(),
                                         tasks.TaskWait(0.25),
-                                        tasks.TaskAudioTrack(AudioTrack.LISTEN_OUTRO),
+                                        tasks.TaskAudioTrack(
+                                            AudioTrack.LISTEN_OUTRO, audio_player
+                                        ),
                                         tasks.TaskWait(0.5),
                                     ]
                                 ),
@@ -176,19 +187,35 @@ def root_task():
                             },
                             invalid_choice=tasks.TaskRandomTask(
                                 [
-                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_1),
-                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_2),
-                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_3),
-                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_4),
-                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_5),
-                                    tasks.TaskAudioTrack(AudioTrack.INVALID_OPTION_6),
+                                    tasks.TaskAudioTrack(
+                                        AudioTrack.INVALID_OPTION_1, audio_player
+                                    ),
+                                    tasks.TaskAudioTrack(
+                                        AudioTrack.INVALID_OPTION_2, audio_player
+                                    ),
+                                    tasks.TaskAudioTrack(
+                                        AudioTrack.INVALID_OPTION_3, audio_player
+                                    ),
+                                    tasks.TaskAudioTrack(
+                                        AudioTrack.INVALID_OPTION_4, audio_player
+                                    ),
+                                    tasks.TaskAudioTrack(
+                                        AudioTrack.INVALID_OPTION_5, audio_player
+                                    ),
+                                    tasks.TaskAudioTrack(
+                                        AudioTrack.INVALID_OPTION_6, audio_player
+                                    ),
                                 ]
                             ),
                             intro_task=tasks.TaskSequence(
                                 [
-                                    tasks.TaskAudioTrack(AudioTrack.MENU_1),
+                                    tasks.TaskAudioTrack(
+                                        AudioTrack.MENU_1, audio_player
+                                    ),
                                     tasks.TaskWait(3),
-                                    tasks.TaskAudioTrack(AudioTrack.MENU_2),
+                                    tasks.TaskAudioTrack(
+                                        AudioTrack.MENU_2, audio_player
+                                    ),
                                 ]
                             ),
                             timeout=10,

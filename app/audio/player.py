@@ -1,6 +1,7 @@
 import logging
 import sys
 import subprocess
+from time import time
 
 
 class AudioPlayer:
@@ -25,3 +26,23 @@ class AudioPlayer:
 
     def tick(self) -> None:
         self.is_playing = self._p.poll() is None if self._p is not None else False
+
+
+class DebugAudioPlayer(AudioPlayer):
+    def __init__(self):
+        super().__init__()
+        self.is_playing = False
+        self._time_started = None
+        self._end_time = -1
+
+    def play(self, filename: str) -> None:
+        self.is_playing = True
+        self._end_time = time() + 3
+        print(filename)
+
+    def stop(self) -> None:
+        self._end_time = time()
+        pass
+
+    def tick(self) -> None:
+        self.is_playing = self._end_time > 0 and time() >= self._end_time

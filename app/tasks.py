@@ -460,3 +460,12 @@ class TaskRandomTask(TaskRunTask):
     def start(self) -> None:
         self._task = random.choice(self._tasks)
         self._task.start()
+
+
+class TaskPrint(Task):
+    def __init__(self, message: str) -> None:
+        super().__init__()
+        self._message = message
+
+    def start(self) -> None:
+        print(self._message)
