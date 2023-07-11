@@ -182,13 +182,7 @@ def root_task():
                             invalid_choice=tasks.TaskAudioTrack(
                                 AudioTrack.INVALID_OPTION_3
                             ),
-                            intro_task=tasks.TaskSequence(
-                                [
-                                    tasks.TaskAudioTrack(AudioTrack.MENU_1),
-                                    tasks.TaskWait(3),
-                                    tasks.TaskAudioTrack(AudioTrack.MENU_2),
-                                ]
-                            ),
+                            intro_task=tasks.TaskAudioTrack(AudioTrack.MENU_1),
                             timeout=10,
                         ),
                         tasks.TaskWait(1),
