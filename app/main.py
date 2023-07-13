@@ -200,8 +200,8 @@ def start():
     input_manager = CircuitBoard()
     phone = Telephone(input_manager, root_task)
 
-    process_thread = Thread(target=processor)
-    process_thread.start()
+    # process_thread = Thread(target=processor)
+    # process_thread.start()
 
     phone_thread = Thread(target=phone.start)
     phone_thread.start()
