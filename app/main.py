@@ -183,7 +183,7 @@ def root_task():
                                 AudioTrack.INVALID_OPTION_3
                             ),
                             intro_task=tasks.TaskAudioTrack(AudioTrack.MENU_1),
-                            timeout=10,
+                            timeout=30,
                         ),
                         tasks.TaskWait(1),
                     ]
