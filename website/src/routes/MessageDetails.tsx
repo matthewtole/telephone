@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { API_ROOT, MESSAGES_ROOT } from '../config';
-import { formatDate } from './MessageList';
+import { formatDate, formatDuration } from './MessageList';
 import { Message, Play } from '../types';
 import AudioPlayer from 'react-h5-audio-player';
 
@@ -89,6 +89,7 @@ export function MessageDetails() {
         >
           <h2>Recording #{data.message.id}</h2>
           <span>{formatDate(data.message.created_at)}</span>
+          <span>{formatDuration(data.message.duration)}</span>
           <button onClick={() => {
             deleteMessage.mutate();
           }}>Delete</button>
@@ -109,6 +110,9 @@ export function MessageDetails() {
           showJumpControls={false}
           showSkipControls={false}
         />
+      </section>
+      <section>
+        <p><a href={`${MESSAGES_ROOT}/${data.message.filename}`}>Download message</a></p>
       </section>
       <section>
         <p>Played {data.message.play_count} times</p>
