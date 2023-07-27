@@ -37,6 +37,7 @@ export function MessageList() {
       <table>
         <thead>
           <tr>
+            <th style={{ width: 40, textAlign: 'center' }}>★</th>
             <th>ID</th>
             <th>
               <Link to="?sort=created_at">Created</Link>
@@ -57,6 +58,9 @@ export function MessageList() {
           {data != null &&
             data.map((message) => (
               <tr key={message.id}>
+                <td style={{ textAlign: 'center' }}>
+                  {message.is_starred === 1 && '★'}
+                </td>
                 <td style={{ fontVariantNumeric: 'tabular-nums' }}>
                   <Link to={`${message.id}`} className="block-link">
                     {message.id.toString().padStart(4, '0')}

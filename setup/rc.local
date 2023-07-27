@@ -1,0 +1,37 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+
+export NVM_DIR="/home/matthew/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+#/home/matthew/setup-audio.sh
+
+export PATH=/home/matthew/.local/bin:$PATH
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+cd /home/matthew/repos/matthewtole/telephone/website
+npm run dev >> /home/matthew/repos/matthewtole/telephone/website.log 2>&1 &
+
+#cd /home/matthew/repos/matthewtole/telephone
+#source app/.venv/bin/activate
+#python app/main.py start >> telephone.log 2>&1
+
+exit 0

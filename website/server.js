@@ -132,6 +132,22 @@ app.delete('/api/message/:id', async (req, res) => {
   res.status(204).send();
 });
 
+app.post('/api/message/:id/star', async (req, res) => {
+  const db = await Db();
+  await db.run(
+    `UPDATE messages SET is_starred=1 WHERE id=${Number(req.params.id)}`
+  );
+  res.status(204).send();
+});
+
+app.post('/api/message/:id/unstar', async (req, res) => {
+  const db = await Db();
+  await db.run(
+    `UPDATE messages SET is_starred=0 WHERE id=${Number(req.params.id)}`
+  );
+  res.status(204).send();
+});
+
 app.get('/api/logs/telephone', async (_, res) => {
   res.sendFile(path.resolve(__dirname + '/../telephone.log'));
 });

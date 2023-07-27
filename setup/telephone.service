@@ -1,0 +1,10 @@
+[Unit]
+Description=Telephone systemd service.
+
+[Service]
+Type=simple
+User=matthew
+ExecStart=/bin/bash /usr/bin/telephone.sh
+
+[Install]
+WantedBy=default.target

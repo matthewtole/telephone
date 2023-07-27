@@ -5,6 +5,7 @@ export interface Message {
   last_played_at?: string;
   filename: string;
   duration: number;
+  is_starred: number;
 }
 
 export interface Play {

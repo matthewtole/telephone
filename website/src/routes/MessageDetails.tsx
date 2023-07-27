@@ -36,7 +36,7 @@ export function MessageDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data, error, isError } = useQuery<{
+  const { data, error, isError, refetch } = useQuery<{
     message: Message;
     previous?: Message;
     next?: Message;
@@ -45,16 +45,34 @@ export function MessageDetails() {
   );
 
   const deleteMessage = useMutation({
-    mutationFn: () => { 
-      return axios.delete(`${API_ROOT}/message/${id}`)
+    mutationFn: () => {
+      return axios.delete(`${API_ROOT}/message/${id}`);
     },
     onSuccess: () => {
       navigate('/messages');
-    }
-  })
+    },
+  });
+
+  const starMessage = useMutation({
+    mutationFn: () => {
+      return axios.post(`${API_ROOT}/message/${id}/star`);
+    },
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const unstarMessage = useMutation({
+    mutationFn: () => {
+      return axios.post(`${API_ROOT}/message/${id}/unstar`);
+    },
+    onSuccess: () => {
+      refetch();
+    },
+  });
 
   if (isError) {
-    return <span>Error: {JSON.stringify(error)}</span>
+    return <span>Error: {JSON.stringify(error)}</span>;
   }
 
   if (data == null) {
@@ -90,9 +108,20 @@ export function MessageDetails() {
           <h2>Recording #{data.message.id}</h2>
           <span>{formatDate(data.message.created_at)}</span>
           <span>{formatDuration(data.message.duration)}</span>
-          <button onClick={() => {
-            deleteMessage.mutate();
-          }}>Delete</button>
+          <div>
+            {data.message.is_starred === 1 ? (
+              <button onClick={() => unstarMessage.mutate()}>★</button>
+            ) : (
+              <button onClick={() => starMessage.mutate()}>☆</button>
+            )}
+            <button
+              onClick={() => {
+                deleteMessage.mutate();
+              }}
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </section>
       <section>
@@ -112,7 +141,11 @@ export function MessageDetails() {
         />
       </section>
       <section>
-        <p><a href={`${MESSAGES_ROOT}/${data.message.filename}`}>Download message</a></p>
+        <p>
+          <a href={`${MESSAGES_ROOT}/${data.message.filename}`}>
+            Download message
+          </a>
+        </p>
       </section>
       <section>
         <p>Played {data.message.play_count} times</p>
